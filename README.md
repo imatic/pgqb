@@ -71,5 +71,10 @@ const sqlStatement = qb.toSql(qb.append(sqlMap, additionalColumn));
 
 Your query now inserts 3 columns instead of original 2. You can append other clauses (like `where`) too.
 
+## Inspiraton
+
+This library was inspired by [honeysql][honeysql].
+
 [template_literals]: https://developer.mozilla.org/cs/docs/Web/JavaScript/Reference/Template_literals
 [sql_template_strings]: https://www.npmjs.com/package/sql-template-strings
+[honeysql]: https://github.com/jkk/honeysql
