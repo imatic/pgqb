@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "6"
+  - "node"
+
+cache:
+  yarn: true
+  directories:
+    - "node_modules"
+
+script:
+  - 'yarn run tslint'
+  - 'yarn run prettier'
+  - 'yarn run test'

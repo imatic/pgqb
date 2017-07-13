@@ -1,0 +1,30 @@
+{
+    "rules": {
+        "no-unused-variable": true,
+        "prefer-for-of": true,
+        "await-promise": true,
+        "no-duplicate-super": true,
+        "no-duplicate-variable": true,
+        "no-string-throw": true,
+        "no-unused-expression": true,
+        "no-use-before-declare": true,
+        "no-var-keyword": true,
+        "prefer-conditional-expression": true,
+        "radix": true,
+        "triple-equals": true,
+        "typeof-compare": true,
+        "use-isnan": true,
+        "deprecation": true,
+        "eofline": true,
+        "indent": [
+            true,
+            "spaces",
+            4
+        ],
+        "linebreak-style": [
+            true,
+            "LF"
+        ],
+        "prefer-const": true
+    }
+}
