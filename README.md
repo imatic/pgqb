@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/nenadalm/Warehouse.png?branch=master)](http://travis-ci.org/imatic/pgqb)
+[![Build Status](https://secure.travis-ci.org/imatic/pgqb.png?branch=master)](http://travis-ci.org/imatic/pgqb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 # pgqb
