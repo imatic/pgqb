@@ -29,7 +29,7 @@ But what if you want to create queries dynamically? Splitting queries into sever
 
 Let's see previous query built using this library:
 ```javascript
-import * as qb from 'pgqb';
+import * as qb from '@imatic/pgqb';
 
 const sqlMap = qb.merge(
     qb.insertInto('table'),
@@ -47,7 +47,7 @@ const sqlStatement = qb.toSql(sqlMap);
 
 Query above automatically escapes identifiers (tables, colums). For now, building the query using this library seems more verbose than using just [sql-template-strings][sql_template_strings]. Imagine you would want to modify the query though. If you wanted to add additional column, you could do it like so:
 ```javascript
-import * as qb from 'pgqb';
+import * as qb from '@imatic/pgqb';
 
 const sqlMap = qb.merge(
     qb.insertInto('table'),
