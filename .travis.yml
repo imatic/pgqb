@@ -1,14 +1,27 @@
 language: node_js
 node_js:
-  - "6"
-  - "node"
-
+  - '6'
+  - 'node'
 cache:
   yarn: true
   directories:
-    - "node_modules"
-
-script:
-  - 'yarn run tslint'
-  - 'yarn run prettier'
-  - 'yarn run test'
+    - node_modules
+jobs:
+  include:
+    - stage: test
+      script:
+      - 'yarn run tslint'
+      - 'yarn run prettier'
+      - 'yarn run test'
+    - stage: deploy
+      node_js: '6'
+      script: skip
+      deploy:
+        provider: npm
+        email: nenadalm@gmail.com
+        api_key:
+          secure: KKbTFMX5coDQSA0ifwJ0aGx2gN23kiPn8lw/GFDvuYNtgpKufyB51nwUY9zLLalaDkf1IUQi7hkZ6g9MUMxY5QY8QnToIDEYHZxPJrIfU4OAmFa7x4ndqTDwyPz88SBQSsQBCSyOvv40mrgHMVGH9PgQaqoAlZ0GJZiOvx+YBT14KxN60f5p8LkhLflo/IRwJUraHR2Mz8dcjX+3QBm4oNztMNEgGcRMFCVcgfhLrCYXWCGuna4RF24c1QMPRMHRkVcrFsVJkjHMWZGJncXRYUl4TTZ7ZEwrhBsasoSxNLdP+5g//sU16Ly0xOlU1T8tpJoNw3Gq0jAg3vqRw+coRgrGcv9hmf+dd6UevUHR4RPFTw3Pr1TZ4hZ7WUpYsSTH4vcgvIS8y1Ta5vfpKE+SnBEXAg8YZIYC271q4ylZ3UHnZJgBNR2dCDSr2m7i5u5HpadCkWp8mA1OBkkRT3fK/8h1xwnFJpipvmvNT9kggMhJ9eafCWlyl4ijZfw3QFMbF+bNr4DU+4+WBZt/YL/KxsN8mv1uVuhrXac+mpPuT29VdDb52WVx6LlLAduUHRvEsSS8SpcqqNvgsjgyhCZ1PpYmnCDDpVSa0dOR2wpcl3h/rObbKMv0DxzrQLsp3kotnmDJSVk1aop3jtFuEFjsED1v/rSuvNvzk7hjvd5Qlq0=
+        on:
+          tags: true
+          repo: imatic/pgqb
+          branch: master
