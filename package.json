@@ -1,6 +1,6 @@
 {
-  "name": "pgqb",
-  "version": "0.1.0",
+  "name": "@imatic/pgqb",
+  "version": "0.1.1",
   "description": "Functional PostgreSQL query builder",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
