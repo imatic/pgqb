@@ -6,6 +6,12 @@
   "typings": "./dist/index.d.ts",
   "repository": "https://github.com/imatic/pgqb.git",
   "license": "MIT",
+  "keywords": [
+    "sql",
+    "query",
+    "querybuilder",
+    "postgresql"
+  ],
   "dependencies": {
     "ramda": "^0.24.1",
     "sql-template-strings": "^2.2.2"

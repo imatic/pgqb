@@ -84,6 +84,7 @@ describe('common/qb', () => {
                 map: {
                     select: [['%', 'count', 't.id']],
                     from: ['table', 't'],
+                    join: ['INNER', ['table2', 't2'], ['=', 't2.id', 't.id']],
                     where: [
                         'and',
                         ['=', 't.col1', {r: 3}],
@@ -98,6 +99,7 @@ describe('common/qb', () => {
                     text:
                         'SELECT COUNT("t"."id")' +
                         ' FROM "table" "t"' +
+                        ' INNER JOIN "table2" "t2" ON "t2"."id" = "t"."id"' +
                         ' WHERE ("t"."col1" = 3 AND ("t"."col2" = $1 OR "t"."col3" = $2))',
                     values: [5, 6],
                 },

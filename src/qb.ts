@@ -34,6 +34,12 @@ export type Expr =
     | Value
     | Sql;
 
+export type Join = [
+    'INNER' | 'LEFT' | 'RIGHT' | 'FULL' | 'CROSS',
+    TableExpr,
+    Expr
+];
+
 export interface Sql {
     select?: Expr[];
     insert_into?: TableExpr;
@@ -43,6 +49,7 @@ export interface Sql {
     on_conflict?: string[];
     set?: Expr[];
     from?: TableExpr;
+    join?: Join;
     do_update?: Expr[];
     where?: Expr;
     for_update?: true;
@@ -68,6 +75,7 @@ const clausePriorities = r.invertObj([
     'on_conflict',
     'set',
     'from',
+    'join',
     'do_update',
     'where',
     'for_update',
@@ -385,6 +393,17 @@ const clauseHandlers: ClauseToHandlerMap = {
     do_update: exprsHandler('DO UPDATE SET '),
     set: exprsHandler('SET '),
     from: tableExprHandler('FROM '),
+    join: (join: Join) =>
+        appendToStatement(
+            SQL``,
+            r.intersperse(' ', [
+                join[0],
+                'JOIN',
+                tableExpr(join[1]),
+                'ON',
+                handleExpr(join[2]),
+            ])
+        ),
     where: (expr: Expr) => SQL`WHERE `.append(handleExpr(expr)),
     for_update: () => 'FOR UPDATE',
     returning: exprsHandler('RETURNING '),

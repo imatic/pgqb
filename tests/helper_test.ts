@@ -93,6 +93,7 @@ describe('qb/helper', () => {
                 actual: h.merge(
                     h.select([h.expr.fn('count', 't.id')]),
                     h.from('table', 't'),
+                    h.join('table2', 't2', h.expr.eq('t2.id', 't.id')),
                     h.where(
                         h.expr.and(
                             h.expr.eq('t.col1', h.val.raw(3)),
@@ -106,6 +107,7 @@ describe('qb/helper', () => {
                 expected: {
                     select: [['%', 'count', 't.id']],
                     from: ['table', 't'],
+                    join: ['INNER', ['table2', 't2'], ['=', 't2.id', 't.id']],
                     where: [
                         'and',
                         ['=', 't.col1', {r: 3}],
