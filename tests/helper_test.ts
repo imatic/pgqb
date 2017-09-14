@@ -102,7 +102,8 @@ describe('qb/helper', () => {
                                 h.expr.eq('t.col3', h.val.inlineParam(6))
                             )
                         )
-                    )
+                    ),
+                    h.orderBy('at.id')
                 ),
                 expected: {
                     select: [['%', 'count', 't.id']],
@@ -117,6 +118,7 @@ describe('qb/helper', () => {
                             ['=', 't.col3', {ip: 6}],
                         ],
                     ],
+                    order_by: [['at.id', 'ASC', 'NULLS LAST']],
                 },
             },
             {

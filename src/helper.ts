@@ -128,6 +128,23 @@ export function where(expr: qb.Expr): qb.Sql {
     return {where: expr};
 }
 
+export function orderBy(
+    expr: qb.Expr,
+    direction?: 'ASC' | 'DESC',
+    nullsFirst?: boolean
+): qb.Sql {
+    const directionString = direction || 'ASC';
+    nullsFirst =
+        nullsFirst === undefined
+            ? direction === 'DESC' ? true : false
+            : nullsFirst;
+    const nullsFirstString = nullsFirst ? 'NULLS FIRST' : 'NULLS LAST';
+
+    return {
+        order_by: [[expr, directionString, nullsFirstString]],
+    };
+}
+
 export function forUpdate(): qb.Sql {
     return {for_update: true};
 }

@@ -94,13 +94,15 @@ describe('common/qb', () => {
                             ['=', 't.col3', {ip: 6}],
                         ],
                     ],
+                    order_by: [['at.id', 'ASC', 'NULLS LAST']],
                 },
                 sql: {
                     text:
                         'SELECT COUNT("t"."id")' +
                         ' FROM "table" "t"' +
                         ' INNER JOIN "table2" "t2" ON "t2"."id" = "t"."id"' +
-                        ' WHERE ("t"."col1" = 3 AND ("t"."col2" = $1 OR "t"."col3" = $2))',
+                        ' WHERE ("t"."col1" = 3 AND ("t"."col2" = $1 OR "t"."col3" = $2))' +
+                        ' ORDER BY "at"."id" ASC NULLS LAST',
                     values: [5, 6],
                 },
             },

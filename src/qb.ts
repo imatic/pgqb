@@ -40,6 +40,8 @@ export type Join = [
     Expr
 ];
 
+export type OrderBy = [[Expr, 'ASC' | 'DESC', 'NULLS FIRST' | 'NULLS LAST']];
+
 export interface Sql {
     select?: Expr[];
     insert_into?: TableExpr;
@@ -52,6 +54,7 @@ export interface Sql {
     join?: Join;
     do_update?: Expr[];
     where?: Expr;
+    order_by?: OrderBy;
     for_update?: true;
     returning?: Expr[];
 }
@@ -78,6 +81,7 @@ const clausePriorities = r.invertObj([
     'join',
     'do_update',
     'where',
+    'order_by',
     'for_update',
     'returning',
 ]);
@@ -409,6 +413,22 @@ const clauseHandlers: ClauseToHandlerMap = {
             ])
         ),
     where: (expr: Expr) => SQL`WHERE `.append(handleExpr(expr)),
+    order_by: (orderBy: OrderBy) =>
+        appendToStatement(
+            SQL`ORDER BY `,
+            r.intersperse<string | SQLStatement>(
+                ', ',
+                r.map(
+                    order =>
+                        handleExpr(order[0])
+                            .append(' ')
+                            .append(order[1])
+                            .append(' ')
+                            .append(order[2]),
+                    orderBy
+                )
+            )
+        ),
     for_update: () => 'FOR UPDATE',
     returning: exprsHandler('RETURNING '),
 };
