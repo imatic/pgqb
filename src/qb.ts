@@ -261,7 +261,9 @@ function varOperatorHandler(operator: string) {
  */
 function binaryOperatorHandler(operator: string) {
     return (op1: Expr, op2: Expr): SQLStatement =>
-        handleExpr(op1).append(` ${operator} `).append(handleExpr(op2));
+        handleExpr(op1)
+            .append(` ${operator} `)
+            .append(handleExpr(op2));
 }
 
 type ExprHandler = (...args) => SQLStatement;
@@ -332,7 +334,9 @@ const exprHandlers: ExprToHandlerMap = {
             )
         ).append(' END'),
     in: (expr: Expr, ...vals: Value[]) =>
-        handleExpr(expr).append(' IN').append(valueList(vals)),
+        handleExpr(expr)
+            .append(' IN')
+            .append(valueList(vals)),
 };
 
 /**
