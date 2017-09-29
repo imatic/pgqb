@@ -15,7 +15,8 @@ jobs:
       - 'yarn run test'
     - stage: deploy
       node_js: '6'
-      script: skip
+      script:
+      - 'yarn install --prod'
       deploy:
         provider: npm
         email: nenadalm@gmail.com

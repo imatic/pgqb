@@ -112,12 +112,16 @@ export function from(table: string | qb.Sql, alias?: string): qb.Sql {
     return {from: r.isNil(alias) ? table : [table, alias]};
 }
 
+export function joins(...joins: qb.Join[]): qb.Sql {
+    return {join: joins};
+}
+
 export function join(
     table: string | qb.Sql,
     alias: string,
     expr: qb.Expr
-): qb.Sql {
-    return {join: ['INNER', [table, alias], expr]};
+): qb.Join {
+    return ['INNER', [table, alias], expr];
 }
 
 export function doUpdate(exprs: qb.Expr[]): qb.Sql {

@@ -51,7 +51,7 @@ export interface Sql {
     on_conflict?: string[];
     set?: Expr[];
     from?: TableExpr;
-    join?: Join;
+    join?: Join[];
     do_update?: Expr[];
     where?: Expr;
     order_by?: OrderBy;
@@ -401,16 +401,26 @@ const clauseHandlers: ClauseToHandlerMap = {
     do_update: exprsHandler('DO UPDATE SET '),
     set: exprsHandler('SET '),
     from: tableExprHandler('FROM '),
-    join: (join: Join) =>
+    join: (joins: Join[]) =>
         appendToStatement(
             SQL``,
-            r.intersperse(' ', [
-                join[0],
-                'JOIN',
-                tableExpr(join[1]),
-                'ON',
-                handleExpr(join[2]),
-            ])
+            r.intersperse<SQLStatement | string>(
+                ' ',
+                r.map(
+                    join =>
+                        appendToStatement(
+                            SQL``,
+                            r.intersperse(' ', [
+                                join[0],
+                                'JOIN',
+                                tableExpr(join[1]),
+                                'ON',
+                                handleExpr(join[2]),
+                            ])
+                        ),
+                    joins
+                )
+            )
         ),
     where: (expr: Expr) => SQL`WHERE `.append(handleExpr(expr)),
     order_by: (orderBy: OrderBy) =>
