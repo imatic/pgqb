@@ -17,7 +17,7 @@ export type ExprOperand = Sql | Value;
 
 export type UnaryOperator = 'null';
 
-export type BinaryOperator = '=' | '!=' | 'as';
+export type BinaryOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'as';
 
 export type VarOperator = 'and' | 'or' | 'case_when' | 'in';
 
@@ -298,6 +298,18 @@ function handleCaseExprTuple(statements: SQLStatement[]): SQLStatement {
         : SQL`ELSE `.append(statements[0]);
 }
 
+function inHandler(expr: Expr, vals: Sql);
+function inHandler(expr: Expr, ...vals: Value[]);
+function inHandler(expr: Expr, ...vals: any[]) {
+    return handleExpr(expr)
+        .append(' IN')
+        .append(
+            vals.length === 1 && !isValue(vals[0])
+                ? wrapInParens(_toSql(vals[0]))
+                : valueList(vals)
+        );
+}
+
 /**
  * Map from expression operators to expression handlers. Handlers
  * returns result in form of SQLStatement
@@ -308,6 +320,10 @@ function handleCaseExprTuple(statements: SQLStatement[]): SQLStatement {
 const exprHandlers: ExprToHandlerMap = {
     '=': binaryOperatorHandler('='),
     '!=': binaryOperatorHandler('!='),
+    '>': binaryOperatorHandler('>'),
+    '>=': binaryOperatorHandler('>='),
+    '<': binaryOperatorHandler('<'),
+    '<=': binaryOperatorHandler('<='),
     as: binaryOperatorHandler('as'),
     '%': (f, ...args) =>
         SQL``
@@ -337,10 +353,7 @@ const exprHandlers: ExprToHandlerMap = {
                 )
             )
         ).append(' END'),
-    in: (expr: Expr, ...vals: Value[]) =>
-        handleExpr(expr)
-            .append(' IN')
-            .append(valueList(vals)),
+    in: inHandler,
 };
 
 /**

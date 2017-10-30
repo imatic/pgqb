@@ -124,10 +124,16 @@ describe('common/qb', () => {
                             ['=', {r: 1}, {r: 0}],
                         ],
                         ['in', 't.code', {ip: 'red'}, {ip: 'green'}],
+                        ['in', 't.code', {ip: 'red'}],
+                        ['in', 't.code', {select: ['t2.code']}],
                         {select: ['id'], from: 'table'},
                         ['as', 'col1', 'renamed'],
                         ['%', 'concat', {select: [{r: "'val'"}]}],
                         ['%', 'concat', 't.col1', 't2.col1'],
+                        ['>', 't1.c', 't2.c'],
+                        ['>=', 't1.c', 't2.c'],
+                        ['<', 't1.c', 't2.c'],
+                        ['<=', 't1.c', 't2.c'],
                     ],
                 },
                 sql: {
@@ -138,11 +144,17 @@ describe('common/qb', () => {
                         ' "t"."code" = null,' +
                         ' CASE WHEN "t"."code" = $2 THEN 1 = 1 ELSE 1 = 0 END,' +
                         ' "t"."code" IN($3, $4),' +
+                        ' "t"."code" IN($5),' +
+                        ' "t"."code" IN(SELECT "t2"."code"),' +
                         ' (SELECT "id" FROM "table"),' +
                         ' "col1" as "renamed",' +
                         " CONCAT((SELECT 'val'))," +
-                        ' CONCAT("t"."col1", "t2"."col1")',
-                    values: [null, 'blue', 'red', 'green'],
+                        ' CONCAT("t"."col1", "t2"."col1"),' +
+                        ' "t1"."c" > "t2"."c",' +
+                        ' "t1"."c" >= "t2"."c",' +
+                        ' "t1"."c" < "t2"."c",' +
+                        ' "t1"."c" <= "t2"."c"',
+                    values: [null, 'blue', 'red', 'green', 'red'],
                 },
             },
         ];

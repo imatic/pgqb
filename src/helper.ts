@@ -171,6 +171,10 @@ function binaryExprHandler(operator) {
 export const expr = {
     eq: binaryExprHandler('='),
     neq: binaryExprHandler('!='),
+    gt: binaryExprHandler('>'),
+    gte: binaryExprHandler('>='),
+    lt: binaryExprHandler('<'),
+    lte: binaryExprHandler('<='),
     as: binaryExprHandler('as'),
     and: (...exprs: qb.Expr[]): qb.Expr => ['and', ...exprs] as qb.Expr,
     or: (...exprs: qb.Expr[]): qb.Expr => ['or', ...exprs] as qb.Expr,
@@ -179,8 +183,8 @@ export const expr = {
     null: (expr: qb.Expr): qb.Expr => ['null', expr],
     caseWhen: (...args: qb.Expr[]): qb.Expr =>
         ['case_when', ...args] as qb.Expr,
-    in: (expr: qb.Expr, values: qb.Value[]) =>
-        ['in', expr, ...values] as qb.Expr,
+    in: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>
+        ['in', expr, ...(Array.isArray(values) ? values : [values])] as qb.Expr,
 };
 
 /**

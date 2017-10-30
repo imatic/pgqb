@@ -18,6 +18,7 @@ jobs:
       script:
       - 'yarn install --prod'
       deploy:
+        skip_cleanup: true
         provider: npm
         email: nenadalm@gmail.com
         api_key:
