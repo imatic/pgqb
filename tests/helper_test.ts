@@ -106,7 +106,9 @@ describe('qb/helper', () => {
                             )
                         )
                     ),
-                    h.orderBy('at.id')
+                    h.orderBy('at.id'),
+                    h.limit(5),
+                    h.offset(3)
                 ),
                 expected: {
                     select: [['%', 'count', 't.id']],
@@ -125,6 +127,8 @@ describe('qb/helper', () => {
                         ],
                     ],
                     order_by: [['at.id', 'ASC', 'NULLS LAST']],
+                    limit: 5,
+                    offset: 3,
                 },
             },
             {

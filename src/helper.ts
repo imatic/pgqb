@@ -149,6 +149,14 @@ export function orderBy(
     };
 }
 
+export function limit(n): qb.Sql {
+    return {limit: n};
+}
+
+export function offset(n): qb.Sql {
+    return {offset: n};
+}
+
 export function forUpdate(): qb.Sql {
     return {for_update: true};
 }

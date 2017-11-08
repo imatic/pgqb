@@ -98,6 +98,8 @@ describe('common/qb', () => {
                         ],
                     ],
                     order_by: [['at.id', 'ASC', 'NULLS LAST']],
+                    limit: 5,
+                    offset: 3,
                 },
                 sql: {
                     text:
@@ -106,7 +108,9 @@ describe('common/qb', () => {
                         ' INNER JOIN "table2" "t2" ON "t2"."id" = "t"."id"' +
                         ' INNER JOIN "table3" "t3" ON "t3"."id" = "t"."id"' +
                         ' WHERE ("t"."col1" = 3 AND ("t"."col2" = $1 OR "t"."col3" = $2))' +
-                        ' ORDER BY "at"."id" ASC NULLS LAST',
+                        ' ORDER BY "at"."id" ASC NULLS LAST' +
+                        ' LIMIT 5' +
+                        ' OFFSET 3',
                     values: [5, 6],
                 },
             },

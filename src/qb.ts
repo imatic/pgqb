@@ -55,6 +55,8 @@ export interface Sql {
     do_update?: Expr[];
     where?: Expr;
     order_by?: OrderBy;
+    limit?: number;
+    offset?: number;
     for_update?: true;
     returning?: Expr[];
 }
@@ -452,6 +454,8 @@ const clauseHandlers: ClauseToHandlerMap = {
                 )
             )
         ),
+    limit: (l: number) => `LIMIT ${l}`,
+    offset: (o: number) => `OFFSET ${o}`,
     for_update: () => 'FOR UPDATE',
     returning: exprsHandler('RETURNING '),
 };
