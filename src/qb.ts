@@ -84,6 +84,8 @@ const clausePriorities = r.invertObj([
     'do_update',
     'where',
     'order_by',
+    'limit',
+    'offset',
     'for_update',
     'returning',
 ]);
