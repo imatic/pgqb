@@ -106,6 +106,7 @@ describe('qb/helper', () => {
                             )
                         )
                     ),
+                    h.groupBy(['t.id']),
                     h.orderBy('at.id'),
                     h.limit(5),
                     h.offset(3)
@@ -126,6 +127,7 @@ describe('qb/helper', () => {
                             ['=', 't.col3', {ip: 6}],
                         ],
                     ],
+                    group_by: ['t.id'],
                     order_by: [['at.id', 'ASC', 'NULLS LAST']],
                     limit: 5,
                     offset: 3,

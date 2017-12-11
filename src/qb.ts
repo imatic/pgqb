@@ -62,6 +62,7 @@ export interface Sql {
     join?: Join[];
     do_update?: Expr[];
     where?: Expr;
+    group_by?: Expr[];
     order_by?: OrderBy;
     limit?: number;
     offset?: number;
@@ -91,6 +92,7 @@ const clausePriorities = r.invertObj([
     'join',
     'do_update',
     'where',
+    'group_by',
     'order_by',
     'limit',
     'offset',
@@ -449,6 +451,11 @@ const clauseHandlers: ClauseToHandlerMap = {
             )
         ),
     where: (expr: Expr) => SQL`WHERE `.append(handleExpr(expr)),
+    group_by: (exprs: Expr[]) =>
+        appendToStatement(
+            SQL`GROUP BY `,
+            r.intersperse<string | SQLStatement>(', ', r.map(handleExpr, exprs))
+        ),
     order_by: (orderBy: OrderBy) =>
         appendToStatement(
             SQL`ORDER BY `,
@@ -543,7 +550,7 @@ function _toSql(m: Sql): SQLStatement {
 
     return r.reduce(
         (sql, clauseKey) => sql.append(' ').append(clauseToSql(m, clauseKey)),
-        SQL``.append(clauseToSql(m, r.head(sortedClauses))),
+        SQL``.append(clauseToSql(m, r.head(sortedClauses) as string)),
         r.tail(sortedClauses)
     );
 }

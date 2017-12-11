@@ -97,6 +97,7 @@ describe('common/qb', () => {
                             ['=', 't.col3', {ip: 6}],
                         ],
                     ],
+                    group_by: ['t.id'],
                     order_by: [['at.id', 'ASC', 'NULLS LAST']],
                     limit: 5,
                     offset: 3,
@@ -108,6 +109,7 @@ describe('common/qb', () => {
                         ' INNER JOIN "table2" "t2" ON "t2"."id" = "t"."id"' +
                         ' INNER JOIN "table3" "t3" ON "t3"."id" = "t"."id"' +
                         ' WHERE ("t"."col1" = 3 AND ("t"."col2" = $1 OR "t"."col3" = $2))' +
+                        ' GROUP BY "t"."id"' +
                         ' ORDER BY "at"."id" ASC NULLS LAST' +
                         ' LIMIT 5' +
                         ' OFFSET 3',

@@ -77,7 +77,7 @@ function _append(m1: qb.Sql, m2: qb.Sql): qb.Sql {
  * ); //=> {columns: ['col1', 'col2', 'col3']}
  */
 export function append(...m: qb.Sql[]): qb.Sql {
-    return r.reduce(_append, r.head(m), r.tail(m));
+    return r.reduce(_append, r.head(m) as qb.Sql, r.tail(m) as qb.Sql[]);
 }
 
 export function select(exprs: qb.Expr[]): qb.Sql {
@@ -130,6 +130,10 @@ export function doUpdate(exprs: qb.Expr[]): qb.Sql {
 
 export function where(expr: qb.Expr): qb.Sql {
     return {where: expr};
+}
+
+export function groupBy(exprs: qb.Expr[]): qb.Sql {
+    return {group_by: exprs};
 }
 
 export function orderBy(
