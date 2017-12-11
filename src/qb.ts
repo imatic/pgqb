@@ -17,7 +17,15 @@ export type ExprOperand = Sql | Value;
 
 export type UnaryOperator = 'null';
 
-export type BinaryOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'as';
+export type BinaryOperator =
+    | '='
+    | '!='
+    | '>'
+    | '>='
+    | '<'
+    | '<='
+    | 'as'
+    | 'like';
 
 export type VarOperator = 'and' | 'or' | 'case_when' | 'in';
 
@@ -358,6 +366,7 @@ const exprHandlers: ExprToHandlerMap = {
             )
         ).append(' END'),
     in: inHandler,
+    like: binaryOperatorHandler('LIKE'),
 };
 
 /**

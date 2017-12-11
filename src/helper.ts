@@ -184,6 +184,7 @@ export const expr = {
     lt: binaryExprHandler('<'),
     lte: binaryExprHandler('<='),
     as: binaryExprHandler('as'),
+    like: binaryExprHandler('like'),
     and: (...exprs: qb.Expr[]): qb.Expr => ['and', ...exprs] as qb.Expr,
     or: (...exprs: qb.Expr[]): qb.Expr => ['or', ...exprs] as qb.Expr,
     fn: (name: string, ...args: any[]): qb.Expr =>

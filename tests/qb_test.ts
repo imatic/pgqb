@@ -138,6 +138,7 @@ describe('common/qb', () => {
                         ['>=', 't1.c', 't2.c'],
                         ['<', 't1.c', 't2.c'],
                         ['<=', 't1.c', 't2.c'],
+                        ['like', 't1.c', {ip: '%text%'}],
                     ],
                 },
                 sql: {
@@ -157,8 +158,9 @@ describe('common/qb', () => {
                         ' "t1"."c" > "t2"."c",' +
                         ' "t1"."c" >= "t2"."c",' +
                         ' "t1"."c" < "t2"."c",' +
-                        ' "t1"."c" <= "t2"."c"',
-                    values: [null, 'blue', 'red', 'green', 'red'],
+                        ' "t1"."c" <= "t2"."c",' +
+                        ` "t1"."c" LIKE $6`,
+                    values: [null, 'blue', 'red', 'green', 'red', '%text%'],
                 },
             },
         ];

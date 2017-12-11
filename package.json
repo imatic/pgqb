@@ -1,42 +1,39 @@
 {
-  "name": "@imatic/pgqb",
-  "version": "0.1.10",
-  "description": "Functional PostgreSQL query builder",
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
-  "repository": "https://github.com/imatic/pgqb.git",
-  "license": "MIT",
-  "keywords": [
-    "sql",
-    "query",
-    "querybuilder",
-    "postgresql"
-  ],
-  "dependencies": {
-    "@types/ramda": "^0.24.3",
-    "ramda": "^0.24.1",
-    "sql-template-strings": "^2.2.2",
-    "typescript": "^2.3.4"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/mocha": "^2.2.41",
-    "chai": "^4.1.0",
-    "mocha": "^3.4.2",
-    "prettier": "^1.4.2",
-    "ts-node": "^3.0.4",
-    "tslint": "^5.4.3"
-  },
-  "scripts": {
-    "clean": "rm -rf dist/",
-    "build": "yarn run clean && tsc -d",
-    "prepublish": "yarn run build",
-    "test": "mocha --require ts-node/register --sort './tests/**/*.ts'",
-    "test:watch": "mocha --require ts-node/register --sort './tests/**/*.ts' --watch-extensions 'ts' --watch",
-    "tslint": "tslint --project . --exclude 'dist/**'",
-    "prettier": "prettier --tab-width 4 --single-quote --trailing-comma 'es5' --no-bracket-spacing --write 'bin/**/*.ts' 'src/**/*.ts' 'tests/**/*.ts'"
-  },
-  "engines": {
-    "node": ">=6"
-  }
+    "name": "@imatic/pgqb",
+    "version": "0.1.11",
+    "description": "Functional PostgreSQL query builder",
+    "main": "./dist/index.js",
+    "typings": "./dist/index.d.ts",
+    "repository": "https://github.com/imatic/pgqb.git",
+    "license": "MIT",
+    "keywords": ["sql", "query", "querybuilder", "postgresql"],
+    "dependencies": {
+        "@types/ramda": "^0.24.3",
+        "ramda": "^0.24.1",
+        "sql-template-strings": "^2.2.2",
+        "typescript": "^2.3.4"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.0.0",
+        "@types/mocha": "^2.2.41",
+        "chai": "^4.1.0",
+        "mocha": "^3.4.2",
+        "prettier": "^1.4.2",
+        "ts-node": "^3.0.4",
+        "tslint": "^5.4.3"
+    },
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "build": "yarn run clean && tsc -d",
+        "prepublish": "yarn run build",
+        "test": "mocha --require ts-node/register --sort './tests/**/*.ts'",
+        "test:watch":
+            "mocha --require ts-node/register --sort './tests/**/*.ts' --watch-extensions 'ts' --watch",
+        "tslint": "tslint --project . --exclude 'dist/**'",
+        "prettier":
+            "prettier --tab-width 4 --single-quote --trailing-comma 'es5' --no-bracket-spacing --write 'bin/**/*.ts' 'src/**/*.ts' 'tests/**/*.ts'"
+    },
+    "engines": {
+        "node": ">=6"
+    }
 }

@@ -157,6 +157,7 @@ describe('qb/helper', () => {
                         h.expr.gte('t1.c', 't2.c'),
                         h.expr.lt('t1.c', 't2.c'),
                         h.expr.lte('t1.c', 't2.c'),
+                        h.expr.like('t1.c', h.val.inlineParam('%text%')),
                     ])
                 ),
                 expected: {
@@ -181,6 +182,7 @@ describe('qb/helper', () => {
                         ['>=', 't1.c', 't2.c'],
                         ['<', 't1.c', 't2.c'],
                         ['<=', 't1.c', 't2.c'],
+                        ['like', 't1.c', {ip: '%text%'}],
                     ],
                 },
             },
