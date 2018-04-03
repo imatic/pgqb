@@ -204,13 +204,15 @@ describe('qb/helper', () => {
                         h.columns(['col1', 'col2']),
                         h.values([['v1', 'v2'], ['v1.2', 'v2.2']]),
                         h.where(h.expr.eq('col1', 'col2')),
-                        h.set([h.expr.eq('col1', 'col2')])
+                        h.set([h.expr.eq('col1', 'col2')]),
+                        h.orderBy('col1', 'ASC')
                     ),
                     h.merge(
                         h.columns(['col3']),
                         h.values([['v3'], ['v3.2']]),
                         h.where(h.expr.eq('col3', 'col4')),
-                        h.set([h.expr.eq('col3', 'col4')])
+                        h.set([h.expr.eq('col3', 'col4')]),
+                        h.orderBy('col3', 'DESC')
                     )
                 ),
                 expected: {
@@ -222,6 +224,10 @@ describe('qb/helper', () => {
                         ['=', 'col3', 'col4'],
                     ],
                     set: [['=', 'col1', 'col2'], ['=', 'col3', 'col4']],
+                    order_by: [
+                        ['col1', 'ASC', 'NULLS LAST'],
+                        ['col3', 'DESC', 'NULLS FIRST'],
+                    ],
                 },
             },
             {

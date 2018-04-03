@@ -48,7 +48,7 @@ export type Join = [
     Expr
 ];
 
-export type OrderBy = [[Expr, 'ASC' | 'DESC', 'NULLS FIRST' | 'NULLS LAST']];
+export type OrderBy = [Expr, 'ASC' | 'DESC', 'NULLS FIRST' | 'NULLS LAST'];
 
 export interface Sql {
     select?: Expr[];
@@ -63,7 +63,7 @@ export interface Sql {
     do_update?: Expr[];
     where?: Expr;
     group_by?: Expr[];
-    order_by?: OrderBy;
+    order_by?: OrderBy[];
     limit?: number;
     offset?: number;
     for_update?: true;

@@ -25,6 +25,7 @@ const appendHandlers = {
         r.map(k => r.concat(v1[k], v2[k]), Object.keys(v1)),
     where: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
     set: (e1: qb.Expr[], e2: qb.Expr[]) => r.concat(e1, e2),
+    order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => r.concat(o1, o2),
 };
 
 /**

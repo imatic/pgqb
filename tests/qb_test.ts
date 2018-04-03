@@ -117,6 +117,20 @@ describe('common/qb', () => {
                 },
             },
             {
+                name: 'multiple order bys',
+                map: {
+                    order_by: [
+                        ['at.id', 'ASC', 'NULLS LAST'],
+                        ['col2', 'DESC', 'NULLS FIRST'],
+                    ],
+                },
+                sql: {
+                    text:
+                        'ORDER BY "at"."id" ASC NULLS LAST, "col2" DESC NULLS FIRST',
+                    values: [],
+                },
+            },
+            {
                 name: 'exprs',
                 map: {
                     select: [
