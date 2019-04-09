@@ -135,6 +135,7 @@ describe('common/qb', () => {
                 map: {
                     select: [
                         ['null', 't.id'],
+                        ['not_null', 't.id'],
                         ['=', 't.code', {ip: null}],
                         ['=', 't.code', {r: null}],
                         [
@@ -161,6 +162,7 @@ describe('common/qb', () => {
                     text:
                         'SELECT' +
                         ' "t"."id" IS NULL,' +
+                        ' "t"."id" IS NOT NULL,' +
                         ' "t"."code" = $1,' +
                         ' "t"."code" = null,' +
                         ' CASE WHEN "t"."code" = $2 THEN 1 = 1 ELSE 1 = 0 END,' +

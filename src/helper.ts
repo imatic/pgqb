@@ -195,6 +195,7 @@ export const expr = {
     fn: (name: string, ...args: any[]): qb.Expr =>
         ['%', name, ...args] as qb.Expr,
     null: (expr: qb.Expr): qb.Expr => ['null', expr],
+    notNull: (expr: qb.Expr): qb.Expr => ['not_null', expr],
     caseWhen: (...args: qb.Expr[]): qb.Expr =>
         ['case_when', ...args] as qb.Expr,
     in: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>

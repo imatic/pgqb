@@ -138,6 +138,7 @@ describe('qb/helper', () => {
                 actual: h.merge(
                     h.select([
                         h.expr.null('t.id'),
+                        h.expr.notNull('t.id'),
                         h.expr.eq('t.code', h.val.inlineParam(null)),
                         h.expr.eq('t.code', h.val.raw(null)),
                         h.expr.caseWhen(
@@ -165,6 +166,7 @@ describe('qb/helper', () => {
                 expected: {
                     select: [
                         ['null', 't.id'],
+                        ['not_null', 't.id'],
                         ['=', 't.code', {ip: null}],
                         ['=', 't.code', {r: null}],
                         [
