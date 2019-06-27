@@ -13,7 +13,7 @@ import * as r from 'ramda';
  * ); //=> {select: ['val2'], from: 'table'}
  */
 export function merge(...m: qb.Sql[]): qb.Sql {
-    return r.reduce(r.merge, {}, m);
+    return r.reduce<qb.Sql, qb.Sql>(r.mergeRight, {}, m);
 }
 
 /**
@@ -22,7 +22,10 @@ export function merge(...m: qb.Sql[]): qb.Sql {
 const appendHandlers = {
     columns: (c1: string[], c2: string[]): string[] => r.concat(c1, c2),
     values: (v1: qb.Value[][], v2: qb.Value[][]): qb.Value[][] =>
-        r.map(k => r.concat(v1[k], v2[k]), Object.keys(v1)),
+        r.map(
+            k => r.concat(v1[k] as qb.Value[], v2[k] as qb.Value[]),
+            Object.keys(v1)
+        ),
     where: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
     set: (e1: qb.Expr[], e2: qb.Expr[]) => r.concat(e1, e2),
     order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => r.concat(o1, o2),
@@ -145,7 +148,9 @@ export function orderBy(
     const directionString = direction || 'ASC';
     nullsFirst =
         nullsFirst === undefined
-            ? direction === 'DESC' ? true : false
+            ? direction === 'DESC'
+                ? true
+                : false
             : nullsFirst;
     const nullsFirstString = nullsFirst ? 'NULLS FIRST' : 'NULLS LAST';
 
@@ -170,8 +175,8 @@ export function returning(exprs: qb.Expr[]): qb.Sql {
     return {returning: exprs};
 }
 
-function binaryExprHandler(operator) {
-    return (expr1: qb.Expr, expr2: qb.Expr): qb.Expr => [
+function binaryExprHandler(operator: qb.BinaryOperator) {
+    return (expr1: qb.ExprOperand, expr2: qb.ExprOperand): qb.Expr => [
         operator,
         expr1,
         expr2,
@@ -190,14 +195,21 @@ export const expr = {
     lte: binaryExprHandler('<='),
     as: binaryExprHandler('as'),
     like: binaryExprHandler('like'),
-    and: (...exprs: qb.Expr[]): qb.Expr => ['and', ...exprs] as qb.Expr,
-    or: (...exprs: qb.Expr[]): qb.Expr => ['or', ...exprs] as qb.Expr,
+    and: (expr: qb.Expr, ...exprs: qb.Expr[]): qb.Expr => [
+        'and',
+        expr,
+        ...exprs,
+    ],
+    or: (expr: qb.Expr, ...exprs: qb.Expr[]): qb.Expr => ['or', expr, ...exprs],
     fn: (name: string, ...args: any[]): qb.Expr =>
         ['%', name, ...args] as qb.Expr,
     null: (expr: qb.Expr): qb.Expr => ['null', expr],
     notNull: (expr: qb.Expr): qb.Expr => ['not_null', expr],
-    caseWhen: (...args: qb.Expr[]): qb.Expr =>
-        ['case_when', ...args] as qb.Expr,
+    caseWhen: (arg: qb.Expr, ...args: qb.Expr[]): qb.Expr => [
+        'case_when',
+        arg,
+        ...args,
+    ],
     in: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>
         ['in', expr, ...(Array.isArray(values) ? values : [values])] as qb.Expr,
 };

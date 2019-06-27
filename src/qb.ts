@@ -29,14 +29,21 @@ export type BinaryOperator =
 
 export type VarOperator = 'and' | 'or' | 'case_when' | 'in';
 
-export type FunctionCall = ['%', any];
+export interface FunctionCall extends Array<any> {
+    0: '%';
+}
+
+export interface VarExpr extends Array<any> {
+    0: VarOperator;
+    1: any;
+}
 
 export type TableExpr = string | [string | Sql, string] | Sql;
 
 export type Expr =
     | [BinaryOperator, ExprOperand, ExprOperand]
     | string
-    | [VarOperator, any]
+    | VarExpr
     | FunctionCall
     | [UnaryOperator, any]
     | Value
@@ -172,12 +179,12 @@ function valueList(row: Value[]): SQLStatement {
  * convertObjectValue({r: 'NOW()'}) //=> {text: 'NOW()', values: []}
  */
 function convertObjectValue(val: ObjectValue): SQLStatement {
-    const inlineParam = r.prop<any>('ip', val);
+    const inlineParam = r.prop<any, any>('ip', val);
     if (inlineParam !== undefined) {
         return SQL`${inlineParam}`;
     }
 
-    const rawValue = r.prop<any>('r', val);
+    const rawValue = r.prop<any, any>('r', val);
     if (rawValue !== undefined) {
         return SQL``.append(rawValue);
     }
@@ -494,7 +501,10 @@ function handleExpr(expr: Expr): SQLStatement {
         return wrapInParens(_toSql(expr));
     }
 
-    const handler = r.prop<ExprHandler | undefined>(r.head(expr), exprHandlers);
+    const handler = r.prop<keyof ExprToHandlerMap, ExprToHandlerMap>(
+        r.head(expr),
+        exprHandlers
+    );
     if (!handler) {
         throw new Error(
             `Unknown expr ${r.head(expr)}. Supported exprs: ${Object.keys(
@@ -519,7 +529,7 @@ function handleExpr(expr: Expr): SQLStatement {
  * ); //=> {text: 'SELECT "id"', values: []}
  */
 function clauseToSql(m: Sql, clauseKey: string): SQLStatement | string {
-    const handler = r.prop<ClauseHandler | undefined>(
+    const handler = r.prop<keyof ClauseToHandlerMap, ClauseToHandlerMap>(
         clauseKey,
         clauseHandlers
     );
