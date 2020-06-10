@@ -161,6 +161,7 @@ describe('qb/helper', () => {
                         h.expr.lt('t1.c', 't2.c'),
                         h.expr.lte('t1.c', 't2.c'),
                         h.expr.like('t1.c', h.val.inlineParam('%text%')),
+                        h.expr.ilike('t1.c', h.val.inlineParam('%text%')),
                     ])
                 ),
                 expected: {
@@ -187,12 +188,13 @@ describe('qb/helper', () => {
                         ['<', 't1.c', 't2.c'],
                         ['<=', 't1.c', 't2.c'],
                         ['like', 't1.c', {ip: '%text%'}],
+                        ['ilike', 't1.c', {ip: '%text%'}],
                     ],
                 },
             },
         ];
 
-        tests.forEach(test => {
+        tests.forEach((test) => {
             it(test.name, () => expect(test.actual).eqls(test.expected));
         });
     });
@@ -259,7 +261,7 @@ describe('qb/helper', () => {
             },
         ];
 
-        tests.forEach(test => {
+        tests.forEach((test) => {
             it(test.name, () => expect(test.actual).eqls(test.expected));
         });
     });

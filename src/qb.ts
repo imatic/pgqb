@@ -25,7 +25,8 @@ export type BinaryOperator =
     | '<'
     | '<='
     | 'as'
-    | 'like';
+    | 'like'
+    | 'ilike';
 
 export type VarOperator = 'and' | 'or' | 'case_when' | 'in';
 
@@ -115,7 +116,7 @@ const clausePriorities = r.invertObj([
  * excape('t'.'id'); //=> '"t"."id"'
  */
 function escape(identifier: string): string {
-    return r.join('.', r.map(id => `"${id}"`, r.split('.', identifier)));
+    return r.join('.', r.map((id) => `"${id}"`, r.split('.', identifier)));
 }
 
 /**
@@ -370,13 +371,14 @@ const exprHandlers: ExprToHandlerMap = {
             r.intersperse<SQLStatement | string>(
                 ' ',
                 r.map(
-                    statements => handleCaseExprTuple(statements),
+                    (statements) => handleCaseExprTuple(statements),
                     r.splitEvery(2, r.map(handleExpr, args))
                 )
             )
         ).append(' END'),
     in: inHandler,
     like: binaryOperatorHandler('LIKE'),
+    ilike: binaryOperatorHandler('ILIKE'),
 };
 
 /**
@@ -430,7 +432,7 @@ const clauseHandlers: ClauseToHandlerMap = {
             SQL`VALUES `,
             r.intersperse<SQLStatement | string>(
                 ', ',
-                r.map(row => valueList(row), list)
+                r.map((row) => valueList(row), list)
             )
         ),
     on_conflict: (columns: string[]) => `ON CONFLICT ${columnList(columns)}`,
@@ -443,7 +445,7 @@ const clauseHandlers: ClauseToHandlerMap = {
             r.intersperse<SQLStatement | string>(
                 ' ',
                 r.map(
-                    join =>
+                    (join) =>
                         appendToStatement(
                             SQL``,
                             r.intersperse(' ', [
@@ -470,7 +472,7 @@ const clauseHandlers: ClauseToHandlerMap = {
             r.intersperse<string | SQLStatement>(
                 ', ',
                 r.map(
-                    order =>
+                    (order) =>
                         handleExpr(order[0])
                             .append(' ')
                             .append(order[1])
@@ -555,7 +557,7 @@ function clauseToSql(m: Sql, clauseKey: string): SQLStatement | string {
  */
 function _toSql(m: Sql): SQLStatement {
     const sortedClauses = r.sortBy(
-        clause => Number(clausePriorities[clause]),
+        (clause) => Number(clausePriorities[clause]),
         Object.keys(m)
     );
 

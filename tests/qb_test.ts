@@ -156,6 +156,7 @@ describe('common/qb', () => {
                         ['<', 't1.c', 't2.c'],
                         ['<=', 't1.c', 't2.c'],
                         ['like', 't1.c', {ip: '%text%'}],
+                        ['ilike', 't1.c', {ip: '%text%'}],
                     ],
                 },
                 sql: {
@@ -177,13 +178,22 @@ describe('common/qb', () => {
                         ' "t1"."c" >= "t2"."c",' +
                         ' "t1"."c" < "t2"."c",' +
                         ' "t1"."c" <= "t2"."c",' +
-                        ` "t1"."c" LIKE $6`,
-                    values: [null, 'blue', 'red', 'green', 'red', '%text%'],
+                        ` "t1"."c" LIKE $6,` +
+                        ` "t1"."c" ILIKE $7`,
+                    values: [
+                        null,
+                        'blue',
+                        'red',
+                        'green',
+                        'red',
+                        '%text%',
+                        '%text%',
+                    ],
                 },
             },
         ];
 
-        tests.forEach(test => {
+        tests.forEach((test) => {
             it(test.name, () =>
                 expect(r.pick(['text', 'values'], qb.toSql(test.map))).eqls(
                     test.sql

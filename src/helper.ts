@@ -23,7 +23,7 @@ const appendHandlers = {
     columns: (c1: string[], c2: string[]): string[] => r.concat(c1, c2),
     values: (v1: qb.Value[][], v2: qb.Value[][]): qb.Value[][] =>
         r.map(
-            k => r.concat(v1[k] as qb.Value[], v2[k] as qb.Value[]),
+            (k) => r.concat(v1[k] as qb.Value[], v2[k] as qb.Value[]),
             Object.keys(v1)
         ),
     where: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
@@ -195,6 +195,7 @@ export const expr = {
     lte: binaryExprHandler('<='),
     as: binaryExprHandler('as'),
     like: binaryExprHandler('like'),
+    ilike: binaryExprHandler('ilike'),
     and: (expr: qb.Expr, ...exprs: qb.Expr[]): qb.Expr => [
         'and',
         expr,
