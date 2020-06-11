@@ -29,6 +29,8 @@ const appendHandlers = {
     where: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
     set: (e1: qb.Expr[], e2: qb.Expr[]) => r.concat(e1, e2),
     order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => r.concat(o1, o2),
+    select: (s1: qb.Expr[], s2: qb.Expr[]) => r.concat(s1, s2),
+    join: (j1: qb.Join[], j2: qb.Join[]) => r.concat(j1, j2),
 };
 
 /**
@@ -126,6 +128,14 @@ export function join(
     expr: qb.Expr
 ): qb.Join {
     return ['INNER', [table, alias], expr];
+}
+
+export function leftJoin(
+    table: string | qb.Sql,
+    alias: string,
+    expr: qb.Expr
+): qb.Join {
+    return ['LEFT', [table, alias], expr];
 }
 
 export function doUpdate(exprs: qb.Expr[]): qb.Sql {

@@ -95,7 +95,12 @@ describe('qb/helper', () => {
                     h.from('table', 't'),
                     h.joins(
                         h.join('table2', 't2', h.expr.eq('t2.id', 't.id')),
-                        h.join('table3', 't3', h.expr.eq('t3.id', 't.id'))
+                        h.join('table3', 't3', h.expr.eq('t3.id', 't.id')),
+                        h.leftJoin(
+                            'leftTable',
+                            't4',
+                            h.expr.eq('t4.id', 't.id')
+                        )
                     ),
                     h.where(
                         h.expr.and(
@@ -117,6 +122,7 @@ describe('qb/helper', () => {
                     join: [
                         ['INNER', ['table2', 't2'], ['=', 't2.id', 't.id']],
                         ['INNER', ['table3', 't3'], ['=', 't3.id', 't.id']],
+                        ['LEFT', ['leftTable', 't4'], ['=', 't4.id', 't.id']],
                     ],
                     where: [
                         'and',
@@ -205,21 +211,35 @@ describe('qb/helper', () => {
                 name: '2 maps',
                 actual: h.append(
                     h.merge(
+                        h.select(['c1.1', 'c1.2']),
                         h.columns(['col1', 'col2']),
                         h.values([['v1', 'v2'], ['v1.2', 'v2.2']]),
                         h.where(h.expr.eq('col1', 'col2')),
                         h.set([h.expr.eq('col1', 'col2')]),
-                        h.orderBy('col1', 'ASC')
+                        h.orderBy('col1', 'ASC'),
+                        h.joins(
+                            h.join('table1', 't1', h.expr.eq('t1.id', 't2.id')),
+                            h.join('table2', 't2', h.expr.eq('t2.id', 't3.id'))
+                        )
                     ),
                     h.merge(
+                        h.select(['c2.1']),
                         h.columns(['col3']),
                         h.values([['v3'], ['v3.2']]),
                         h.where(h.expr.eq('col3', 'col4')),
                         h.set([h.expr.eq('col3', 'col4')]),
-                        h.orderBy('col3', 'DESC')
+                        h.orderBy('col3', 'DESC'),
+                        h.joins(
+                            h.join(
+                                'table21',
+                                't21',
+                                h.expr.eq('t21.id', 't1.id')
+                            )
+                        )
                     )
                 ),
                 expected: {
+                    select: ['c1.1', 'c1.2', 'c2.1'],
                     columns: ['col1', 'col2', 'col3'],
                     values: [['v1', 'v2', 'v3'], ['v1.2', 'v2.2', 'v3.2']],
                     where: [
@@ -231,6 +251,11 @@ describe('qb/helper', () => {
                     order_by: [
                         ['col1', 'ASC', 'NULLS LAST'],
                         ['col3', 'DESC', 'NULLS FIRST'],
+                    ],
+                    join: [
+                        ['INNER', ['table1', 't1'], ['=', 't1.id', 't2.id']],
+                        ['INNER', ['table2', 't2'], ['=', 't2.id', 't3.id']],
+                        ['INNER', ['table21', 't21'], ['=', 't21.id', 't1.id']],
                     ],
                 },
             },
