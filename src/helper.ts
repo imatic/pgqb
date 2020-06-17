@@ -142,6 +142,10 @@ export function doUpdate(exprs: qb.Expr[]): qb.Sql {
     return {do_update: exprs};
 }
 
+export function doNothing(): qb.Sql {
+    return {do_nothing: null};
+}
+
 export function where(expr: qb.Expr): qb.Sql {
     return {where: expr};
 }

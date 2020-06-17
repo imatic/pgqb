@@ -69,6 +69,7 @@ export interface Sql {
     from?: TableExpr;
     join?: Join[];
     do_update?: Expr[];
+    do_nothing?: null;
     where?: Expr;
     group_by?: Expr[];
     order_by?: OrderBy[];
@@ -99,6 +100,7 @@ const clausePriorities = r.invertObj([
     'from',
     'join',
     'do_update',
+    'do_nothing',
     'where',
     'group_by',
     'order_by',
@@ -437,6 +439,7 @@ const clauseHandlers: ClauseToHandlerMap = {
         ),
     on_conflict: (columns: string[]) => `ON CONFLICT ${columnList(columns)}`,
     do_update: exprsHandler('DO UPDATE SET '),
+    do_nothing: () => 'DO NOTHING',
     set: exprsHandler('SET '),
     from: tableExprHandler('FROM '),
     join: (joins: Join[]) =>

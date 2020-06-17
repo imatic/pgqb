@@ -25,6 +25,7 @@ describe('qb/helper', () => {
                     ]),
                     h.onConflict(['first', 'second']),
                     h.doUpdate([h.expr.eq('val3', 'excluded.val3')]),
+                    h.doNothing(),
                     h.where(h.expr.neq('excluded.third', h.val.inlineParam(5)))
                 ),
                 expected: {
@@ -46,6 +47,7 @@ describe('qb/helper', () => {
                     ],
                     on_conflict: ['first', 'second'],
                     do_update: [['=', 'val3', 'excluded.val3']],
+                    do_nothing: null,
                     where: ['!=', 'excluded.third', {ip: 5}],
                 },
             },

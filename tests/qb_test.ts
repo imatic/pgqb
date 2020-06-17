@@ -26,6 +26,7 @@ describe('common/qb', () => {
                     ],
                     on_conflict: ['first', 'second'],
                     do_update: [['=', 'val3', 'excluded.val3']],
+                    do_nothing: null,
                     where: ['!=', 'excluded.third', {ip: 5}],
                 },
                 sql: {
@@ -37,6 +38,7 @@ describe('common/qb', () => {
                         " ($4, $5, $6, (NOW() AT TIME ZONE 'UTC'))" +
                         ' ON CONFLICT ("first", "second") DO UPDATE' +
                         ' SET "val3" = "excluded"."val3"' +
+                        ' DO NOTHING' +
                         ' WHERE "excluded"."third" != $7',
                     values: [
                         'val1',
