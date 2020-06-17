@@ -215,7 +215,10 @@ describe('qb/helper', () => {
                     h.merge(
                         h.select(['c1.1', 'c1.2']),
                         h.columns(['col1', 'col2']),
-                        h.values([['v1', 'v2'], ['v1.2', 'v2.2']]),
+                        h.values([
+                            ['v1', 'v2'],
+                            ['v1.2', 'v2.2'],
+                        ]),
                         h.where(h.expr.eq('col1', 'col2')),
                         h.set([h.expr.eq('col1', 'col2')]),
                         h.orderBy('col1', 'ASC'),
@@ -243,13 +246,19 @@ describe('qb/helper', () => {
                 expected: {
                     select: ['c1.1', 'c1.2', 'c2.1'],
                     columns: ['col1', 'col2', 'col3'],
-                    values: [['v1', 'v2', 'v3'], ['v1.2', 'v2.2', 'v3.2']],
+                    values: [
+                        ['v1', 'v2', 'v3'],
+                        ['v1.2', 'v2.2', 'v3.2'],
+                    ],
                     where: [
                         'and',
                         ['=', 'col1', 'col2'],
                         ['=', 'col3', 'col4'],
                     ],
-                    set: [['=', 'col1', 'col2'], ['=', 'col3', 'col4']],
+                    set: [
+                        ['=', 'col1', 'col2'],
+                        ['=', 'col3', 'col4'],
+                    ],
                     order_by: [
                         ['col1', 'ASC', 'NULLS LAST'],
                         ['col3', 'DESC', 'NULLS FIRST'],
@@ -277,13 +286,19 @@ describe('qb/helper', () => {
                 actual: h.append(
                     h.merge(
                         h.columns(['col1', 'col2']),
-                        h.values([['v1', 'v2'], ['v1.2', 'v2.2']])
+                        h.values([
+                            ['v1', 'v2'],
+                            ['v1.2', 'v2.2'],
+                        ])
                     ),
                     {}
                 ),
                 expected: {
                     columns: ['col1', 'col2'],
-                    values: [['v1', 'v2'], ['v1.2', 'v2.2']],
+                    values: [
+                        ['v1', 'v2'],
+                        ['v1.2', 'v2.2'],
+                    ],
                 },
             },
         ];

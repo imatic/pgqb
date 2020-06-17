@@ -118,7 +118,10 @@ const clausePriorities = r.invertObj([
  * excape('t'.'id'); //=> '"t"."id"'
  */
 function escape(identifier: string): string {
-    return r.join('.', r.map((id) => `"${id}"`, r.split('.', identifier)));
+    return r.join(
+        '.',
+        r.map((id) => `"${id}"`, r.split('.', identifier))
+    );
 }
 
 /**
@@ -289,9 +292,7 @@ function varOperatorHandler(operator: string) {
  */
 function binaryOperatorHandler(operator: string) {
     return (op1: Expr, op2: Expr): SQLStatement =>
-        handleExpr(op1)
-            .append(` ${operator} `)
-            .append(handleExpr(op2));
+        handleExpr(op1).append(` ${operator} `).append(handleExpr(op2));
 }
 
 type ExprHandler = (...args) => SQLStatement;
@@ -392,7 +393,7 @@ const exprHandlers: ExprToHandlerMap = {
  * ]); //=> {text: 'SET "col1" = "col2"', values: []}
  */
 function exprsHandler(statementStart: string) {
-    return function(exprs: Expr[]): SQLStatement {
+    return function (exprs: Expr[]): SQLStatement {
         return appendToStatement(
             SQL``.append(statementStart),
             r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, exprs))
@@ -407,7 +408,7 @@ function exprsHandler(statementStart: string) {
  * tableExprHandler('INSERT INTO ')(['table']); //=> {text: 'INSERT INTO "table"', values: []}
  */
 function tableExprHandler(statementStart: string) {
-    return function(table: TableExpr): SQLStatement {
+    return function (table: TableExpr): SQLStatement {
         return SQL``.append(statementStart).append(tableExpr(table));
     };
 }
