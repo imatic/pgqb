@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '6'
+  - '12'
   - 'node'
 cache:
   yarn: true
@@ -14,7 +14,7 @@ jobs:
       - 'yarn run prettier'
       - 'yarn run test'
     - stage: deploy
-      node_js: '6'
+      node_js: '12'
       script:
       - 'yarn install --prod'
       deploy:

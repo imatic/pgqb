@@ -225,7 +225,8 @@ describe('qb/helper', () => {
                         h.joins(
                             h.join('table1', 't1', h.expr.eq('t1.id', 't2.id')),
                             h.join('table2', 't2', h.expr.eq('t2.id', 't3.id'))
-                        )
+                        ),
+                        h.groupBy(['c1.1', 'c1.2'])
                     ),
                     h.merge(
                         h.select(['c2.1']),
@@ -240,7 +241,8 @@ describe('qb/helper', () => {
                                 't21',
                                 h.expr.eq('t21.id', 't1.id')
                             )
-                        )
+                        ),
+                        h.groupBy(['c2.1'])
                     )
                 ),
                 expected: {
@@ -268,6 +270,7 @@ describe('qb/helper', () => {
                         ['INNER', ['table2', 't2'], ['=', 't2.id', 't3.id']],
                         ['INNER', ['table21', 't21'], ['=', 't21.id', 't1.id']],
                     ],
+                    group_by: ['c1.1', 'c1.2', 'c2.1'],
                 },
             },
             {

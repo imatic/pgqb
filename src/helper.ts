@@ -31,6 +31,7 @@ const appendHandlers = {
     order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => r.concat(o1, o2),
     select: (s1: qb.Expr[], s2: qb.Expr[]) => r.concat(s1, s2),
     join: (j1: qb.Join[], j2: qb.Join[]) => r.concat(j1, j2),
+    group_by: (g1: qb.Expr[], g2: qb.Expr[]) => r.concat(g1, g2),
 };
 
 /**
