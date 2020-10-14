@@ -170,6 +170,7 @@ describe('qb/helper', () => {
                         h.expr.lte('t1.c', 't2.c'),
                         h.expr.like('t1.c', h.val.inlineParam('%text%')),
                         h.expr.ilike('t1.c', h.val.inlineParam('%text%')),
+                        h.expr.notIn('t.code', [h.val.inlineParam('red')])
                     ])
                 ),
                 expected: {
@@ -197,6 +198,7 @@ describe('qb/helper', () => {
                         ['<=', 't1.c', 't2.c'],
                         ['like', 't1.c', {ip: '%text%'}],
                         ['ilike', 't1.c', {ip: '%text%'}],
+                        ['not_in', 't.code', {ip: 'red'}],
                     ],
                 },
             },

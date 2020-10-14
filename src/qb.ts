@@ -28,7 +28,7 @@ export type BinaryOperator =
     | 'like'
     | 'ilike';
 
-export type VarOperator = 'and' | 'or' | 'case_when' | 'in';
+export type VarOperator = 'and' | 'or' | 'case_when' | 'in' | 'not_in';
 
 export interface FunctionCall extends Array<any> {
     0: '%';
@@ -323,6 +323,18 @@ function handleCaseExprTuple(statements: SQLStatement[]): SQLStatement {
         : SQL`ELSE `.append(statements[0]);
 }
 
+function notInHandler(expr: Expr, vals: Sql);
+function notInHandler(expr: Expr, ...vals: Value[]);
+function notInHandler(expr: Expr, ...vals: any[]) {
+    return handleExpr(expr)
+        .append(' NOT IN')
+        .append(
+            vals.length === 1 && !isValue(vals[0])
+                ? wrapInParens(_toSql(vals[0]))
+                : valueList(vals)
+        );
+}
+
 function inHandler(expr: Expr, vals: Sql);
 function inHandler(expr: Expr, ...vals: Value[]);
 function inHandler(expr: Expr, ...vals: any[]) {
@@ -380,6 +392,7 @@ const exprHandlers: ExprToHandlerMap = {
             )
         ).append(' END'),
     in: inHandler,
+    not_in: notInHandler,
     like: binaryOperatorHandler('LIKE'),
     ilike: binaryOperatorHandler('ILIKE'),
 };

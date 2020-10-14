@@ -228,6 +228,8 @@ export const expr = {
     ],
     in: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>
         ['in', expr, ...(Array.isArray(values) ? values : [values])] as qb.Expr,
+    notIn: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>
+        ['not_in', expr, ...(Array.isArray(values) ? values : [values])] as qb.Expr,
 };
 
 /**

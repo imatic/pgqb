@@ -159,6 +159,7 @@ describe('common/qb', () => {
                         ['<=', 't1.c', 't2.c'],
                         ['like', 't1.c', {ip: '%text%'}],
                         ['ilike', 't1.c', {ip: '%text%'}],
+                        ['not_in', 't.code', {ip: 'red'}],
                     ],
                 },
                 sql: {
@@ -181,7 +182,8 @@ describe('common/qb', () => {
                         ' "t1"."c" < "t2"."c",' +
                         ' "t1"."c" <= "t2"."c",' +
                         ` "t1"."c" LIKE $6,` +
-                        ` "t1"."c" ILIKE $7`,
+                        ` "t1"."c" ILIKE $7,` +
+                        ` "t"."code" NOT IN($8)`,
                     values: [
                         null,
                         'blue',
@@ -190,6 +192,7 @@ describe('common/qb', () => {
                         'red',
                         '%text%',
                         '%text%',
+                        'red'
                     ],
                 },
             },
