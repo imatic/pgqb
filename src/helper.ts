@@ -211,6 +211,7 @@ export const expr = {
     as: binaryExprHandler('as'),
     like: binaryExprHandler('like'),
     ilike: binaryExprHandler('ilike'),
+    overlaps: binaryExprHandler('&&'),
     and: (expr: qb.Expr, ...exprs: qb.Expr[]): qb.Expr => [
         'and',
         expr,

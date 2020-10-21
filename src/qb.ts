@@ -26,7 +26,8 @@ export type BinaryOperator =
     | '<='
     | 'as'
     | 'like'
-    | 'ilike';
+    | 'ilike'
+    | '&&';
 
 export type VarOperator = 'and' | 'or' | 'case_when' | 'in' | 'not_in';
 
@@ -361,6 +362,7 @@ const exprHandlers: ExprToHandlerMap = {
     '>=': binaryOperatorHandler('>='),
     '<': binaryOperatorHandler('<'),
     '<=': binaryOperatorHandler('<='),
+    '&&': binaryOperatorHandler('&&'),
     as: binaryOperatorHandler('as'),
     '%': (f, ...args) =>
         SQL``
