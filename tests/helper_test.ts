@@ -142,6 +142,17 @@ describe('qb/helper', () => {
                 },
             },
             {
+                name: 'select_distinct',
+                actual: h.merge(
+                    h.selectDistinct(['t.id'], [h.expr.fn('count', 't.id')]),
+                    h.from('table', 't'),
+                ),
+                expected: {
+                    select_distinct: {on: ['t.id'], exprs: [['%', 'count', 't.id']]},
+                    from: ['table', 't'],
+                },
+            },
+            {
                 name: 'exprs',
                 actual: h.merge(
                     h.select([

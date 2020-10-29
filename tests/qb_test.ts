@@ -119,6 +119,19 @@ describe('common/qb', () => {
                 },
             },
             {
+                name: 'select_distinct',
+                map: {
+                    select_distinct: {on: ['t.id'], exprs: [['%', 'count', 't.id']]},
+                    from: ['table', 't'],
+                },
+                sql: {
+                    text:
+                        'SELECT DISTINCT ON ("t"."id") COUNT("t"."id")' +
+                        ' FROM "table" "t"',
+                    values: [],
+                },
+            },
+            {
                 name: 'multiple order bys',
                 map: {
                     order_by: [

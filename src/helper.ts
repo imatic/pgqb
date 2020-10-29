@@ -91,6 +91,10 @@ export function select(exprs: qb.Expr[]): qb.Sql {
     return {select: exprs};
 }
 
+export function selectDistinct(on: qb.Expr[], exprs: qb.Expr[]): qb.Sql {
+    return {select_distinct: {on: on, exprs}};
+}
+
 export function insertInto(table: string | qb.Sql, alias?: string): qb.Sql {
     return {insert_into: r.isNil(alias) ? table : [table, alias]};
 }

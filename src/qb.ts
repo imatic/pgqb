@@ -61,6 +61,7 @@ export type OrderBy = [Expr, 'ASC' | 'DESC', 'NULLS FIRST' | 'NULLS LAST'];
 
 export interface Sql {
     select?: Expr[];
+    select_distinct?: {on: Expr[], exprs: Expr[]},
     insert_into?: TableExpr;
     update?: TableExpr;
     columns?: string[];
@@ -92,6 +93,7 @@ export {Statement as SQLStatement};
  */
 const clausePriorities = r.invertObj([
     'select',
+    'select_distinct',
     'insert_into',
     'update',
     'columns',
@@ -442,6 +444,14 @@ interface ClauseToHandlerMap {
  */
 const clauseHandlers: ClauseToHandlerMap = {
     select: exprsHandler('SELECT '),
+    select_distinct: ({on, exprs}: {on: Expr[], exprs: Expr[]}) => {
+        const onSt = appendToStatement(
+            SQL`SELECT DISTINCT ON (`,
+            r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, on))
+        ).append(') ');
+
+        return appendToStatement(onSt, r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, exprs)));
+    },
     insert_into: tableExprHandler('INSERT INTO '),
     update: tableExprHandler('UPDATE '),
     columns: (columns: string[]) => columnList(columns),
