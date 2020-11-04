@@ -74,6 +74,7 @@ export interface Sql {
     do_nothing?: null;
     where?: Expr;
     group_by?: Expr[];
+    having?: Expr;
     order_by?: OrderBy[];
     limit?: number;
     offset?: number;
@@ -106,6 +107,7 @@ const clausePriorities = r.invertObj([
     'do_nothing',
     'where',
     'group_by',
+    'having',
     'order_by',
     'limit',
     'offset',
@@ -495,6 +497,7 @@ const clauseHandlers: ClauseToHandlerMap = {
             SQL`GROUP BY `,
             r.intersperse<string | SQLStatement>(', ', r.map(handleExpr, exprs))
         ),
+    having: (expr: Expr) => SQL`HAVING `.append(handleExpr(expr)),
     order_by: (orderBy: OrderBy) =>
         appendToStatement(
             SQL`ORDER BY `,

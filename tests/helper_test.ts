@@ -114,6 +114,7 @@ describe('qb/helper', () => {
                         )
                     ),
                     h.groupBy(['t.id']),
+                    h.having(h.expr.eq('t.id', h.val.inlineParam(7))),
                     h.orderBy('at.id'),
                     h.limit(5),
                     h.offset(3)
@@ -136,6 +137,7 @@ describe('qb/helper', () => {
                         ],
                     ],
                     group_by: ['t.id'],
+                    having: ['=', 't.id', {ip: 7}],
                     order_by: [['at.id', 'ASC', 'NULLS LAST']],
                     limit: 5,
                     offset: 3,
@@ -241,7 +243,8 @@ describe('qb/helper', () => {
                             h.join('table1', 't1', h.expr.eq('t1.id', 't2.id')),
                             h.join('table2', 't2', h.expr.eq('t2.id', 't3.id'))
                         ),
-                        h.groupBy(['c1.1', 'c1.2'])
+                        h.groupBy(['c1.1', 'c1.2']),
+                        h.having(h.expr.null('c1.1'))
                     ),
                     h.merge(
                         h.select(['c2.1']),
@@ -257,7 +260,8 @@ describe('qb/helper', () => {
                                 h.expr.eq('t21.id', 't1.id')
                             )
                         ),
-                        h.groupBy(['c2.1'])
+                        h.groupBy(['c2.1']),
+                        h.having(h.expr.null('c2.1'))
                     )
                 ),
                 expected: {
@@ -286,6 +290,7 @@ describe('qb/helper', () => {
                         ['INNER', ['table21', 't21'], ['=', 't21.id', 't1.id']],
                     ],
                     group_by: ['c1.1', 'c1.2', 'c2.1'],
+                    having: ['and', ['null', 'c1.1'], ['null', 'c2.1']]
                 },
             },
             {

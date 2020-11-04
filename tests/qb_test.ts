@@ -100,6 +100,7 @@ describe('common/qb', () => {
                         ],
                     ],
                     group_by: ['t.id'],
+                    having: ['=', 't.id', {ip: 7}],
                     order_by: [['at.id', 'ASC', 'NULLS LAST']],
                     limit: 5,
                     offset: 3,
@@ -112,10 +113,11 @@ describe('common/qb', () => {
                         ' INNER JOIN "table3" "t3" ON "t3"."id" = "t"."id"' +
                         ' WHERE ("t"."col1" = 3 AND ("t"."col2" = $1 OR "t"."col3" = $2))' +
                         ' GROUP BY "t"."id"' +
+                        ' HAVING "t"."id" = $3' +
                         ' ORDER BY "at"."id" ASC NULLS LAST' +
                         ' LIMIT 5' +
                         ' OFFSET 3',
-                    values: [5, 6],
+                    values: [5, 6, 7],
                 },
             },
             {

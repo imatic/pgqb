@@ -27,6 +27,7 @@ const appendHandlers = {
             Object.keys(v1)
         ),
     where: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
+    having: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
     set: (e1: qb.Expr[], e2: qb.Expr[]) => r.concat(e1, e2),
     order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => r.concat(o1, o2),
     select: (s1: qb.Expr[], s2: qb.Expr[]) => r.concat(s1, s2),
@@ -157,6 +158,10 @@ export function where(expr: qb.Expr): qb.Sql {
 
 export function groupBy(exprs: qb.Expr[]): qb.Sql {
     return {group_by: exprs};
+}
+
+export function having(expr: qb.Expr): qb.Sql {
+    return {having: expr};
 }
 
 export function orderBy(
