@@ -30,7 +30,7 @@
     "scripts": {
         "clean": "rm -rf dist/",
         "build": "yarn run clean && tsc -d",
-        "prepublish": "yarn install --prod && yarn run build",
+        "prepublish": "yarn run build",
         "test": "mocha --require ts-node/register --sort './tests/**/*.ts'",
         "test:watch": "mocha --require ts-node/register --sort './tests/**/*.ts' --watch-extensions 'ts' --watch",
         "tslint": "tslint --project . --exclude 'dist/**'",
