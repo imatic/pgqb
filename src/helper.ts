@@ -231,6 +231,7 @@ export const expr = {
         ['%', name, ...args] as qb.Expr,
     null: (expr: qb.Expr): qb.Expr => ['null', expr],
     notNull: (expr: qb.Expr): qb.Expr => ['not_null', expr],
+    not: (expr: qb.Expr): qb.Expr => ['not', expr],
     caseWhen: (arg: qb.Expr, ...args: qb.Expr[]): qb.Expr => [
         'case_when',
         arg,

@@ -15,8 +15,6 @@ jobs:
       - 'yarn run test'
     - stage: deploy
       node_js: '12'
-      script:
-      - 'yarn install --prod'
       deploy:
         skip_cleanup: true
         provider: npm

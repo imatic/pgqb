@@ -15,7 +15,7 @@ export type Value = string | ObjectValue;
 
 export type ExprOperand = Sql | Value;
 
-export type UnaryOperator = 'null' | 'not_null';
+export type UnaryOperator = 'null' | 'not_null' | 'not';
 
 export type BinaryOperator =
     | '='
@@ -386,6 +386,7 @@ const exprHandlers: ExprToHandlerMap = {
     or: varOperatorHandler('OR'),
     null: (expr: Expr) => handleExpr(expr).append(' IS NULL'),
     not_null: (expr: Expr) => handleExpr(expr).append(' IS NOT NULL'),
+    not: (expr: Expr) => SQL`NOT `.append(wrapInParens(handleExpr(expr))),
     case_when: (...args: Expr[]) =>
         appendToStatement(
             SQL`CASE `,
