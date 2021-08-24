@@ -123,7 +123,10 @@ describe('common/qb', () => {
             {
                 name: 'select_distinct',
                 map: {
-                    select_distinct: {on: ['t.id'], exprs: [['%', 'count', 't.id']]},
+                    select_distinct: {
+                        on: ['t.id'],
+                        exprs: [['%', 'count', 't.id']],
+                    },
                     from: ['table', 't'],
                 },
                 sql: {
@@ -176,7 +179,8 @@ describe('common/qb', () => {
                         ['ilike', 't1.c', {ip: '%text%'}],
                         ['not_in', 't.code', {ip: 'red'}],
                         ['&&', 't1.c', 't2.c'],
-                        ['not', 't1.b']
+                        ['not', 't1.b'],
+                        ['exists', {select: ['t.c']}],
                     ],
                 },
                 sql: {
@@ -202,7 +206,8 @@ describe('common/qb', () => {
                         ` "t1"."c" ILIKE $7,` +
                         ` "t"."code" NOT IN($8),` +
                         ` "t1"."c" && "t2"."c",` +
-                        ` NOT ("t1"."b")`,
+                        ` NOT ("t1"."b"),` +
+                        ` EXISTS ((SELECT "t"."c"))`,
                     values: [
                         null,
                         'blue',
@@ -211,7 +216,7 @@ describe('common/qb', () => {
                         'red',
                         '%text%',
                         '%text%',
-                        'red'
+                        'red',
                     ],
                 },
             },

@@ -232,6 +232,7 @@ export const expr = {
     null: (expr: qb.Expr): qb.Expr => ['null', expr],
     notNull: (expr: qb.Expr): qb.Expr => ['not_null', expr],
     not: (expr: qb.Expr): qb.Expr => ['not', expr],
+    exists: (expr: qb.Sql): qb.Expr => ['exists', expr],
     caseWhen: (arg: qb.Expr, ...args: qb.Expr[]): qb.Expr => [
         'case_when',
         arg,
@@ -240,7 +241,11 @@ export const expr = {
     in: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>
         ['in', expr, ...(Array.isArray(values) ? values : [values])] as qb.Expr,
     notIn: (expr: qb.Expr, values: qb.Value[] | qb.Sql) =>
-        ['not_in', expr, ...(Array.isArray(values) ? values : [values])] as qb.Expr,
+        [
+            'not_in',
+            expr,
+            ...(Array.isArray(values) ? values : [values]),
+        ] as qb.Expr,
 };
 
 /**

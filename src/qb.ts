@@ -15,7 +15,7 @@ export type Value = string | ObjectValue;
 
 export type ExprOperand = Sql | Value;
 
-export type UnaryOperator = 'null' | 'not_null' | 'not';
+export type UnaryOperator = 'null' | 'not_null' | 'not' | 'exists';
 
 export type BinaryOperator =
     | '='
@@ -61,7 +61,7 @@ export type OrderBy = [Expr, 'ASC' | 'DESC', 'NULLS FIRST' | 'NULLS LAST'];
 
 export interface Sql {
     select?: Expr[];
-    select_distinct?: {on: Expr[], exprs: Expr[]},
+    select_distinct?: {on: Expr[]; exprs: Expr[]};
     insert_into?: TableExpr;
     update?: TableExpr;
     columns?: string[];
@@ -387,6 +387,8 @@ const exprHandlers: ExprToHandlerMap = {
     null: (expr: Expr) => handleExpr(expr).append(' IS NULL'),
     not_null: (expr: Expr) => handleExpr(expr).append(' IS NOT NULL'),
     not: (expr: Expr) => SQL`NOT `.append(wrapInParens(handleExpr(expr))),
+    exists: (sqlMap: Sql) =>
+        SQL`EXISTS `.append(wrapInParens(handleExpr(sqlMap))),
     case_when: (...args: Expr[]) =>
         appendToStatement(
             SQL`CASE `,
@@ -447,13 +449,16 @@ interface ClauseToHandlerMap {
  */
 const clauseHandlers: ClauseToHandlerMap = {
     select: exprsHandler('SELECT '),
-    select_distinct: ({on, exprs}: {on: Expr[], exprs: Expr[]}) => {
+    select_distinct: ({on, exprs}: {on: Expr[]; exprs: Expr[]}) => {
         const onSt = appendToStatement(
             SQL`SELECT DISTINCT ON (`,
             r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, on))
         ).append(') ');
 
-        return appendToStatement(onSt, r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, exprs)));
+        return appendToStatement(
+            onSt,
+            r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, exprs))
+        );
     },
     insert_into: tableExprHandler('INSERT INTO '),
     update: tableExprHandler('UPDATE '),

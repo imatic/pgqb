@@ -147,10 +147,13 @@ describe('qb/helper', () => {
                 name: 'select_distinct',
                 actual: h.merge(
                     h.selectDistinct(['t.id'], [h.expr.fn('count', 't.id')]),
-                    h.from('table', 't'),
+                    h.from('table', 't')
                 ),
                 expected: {
-                    select_distinct: {on: ['t.id'], exprs: [['%', 'count', 't.id']]},
+                    select_distinct: {
+                        on: ['t.id'],
+                        exprs: [['%', 'count', 't.id']],
+                    },
                     from: ['table', 't'],
                 },
             },
@@ -186,6 +189,7 @@ describe('qb/helper', () => {
                         h.expr.notIn('t.code', [h.val.inlineParam('red')]),
                         h.expr.overlaps('t1.c', 't2.c'),
                         h.expr.not('t1.b'),
+                        h.expr.exists(h.merge(h.select(['t.c']))),
                     ])
                 ),
                 expected: {
@@ -215,7 +219,8 @@ describe('qb/helper', () => {
                         ['ilike', 't1.c', {ip: '%text%'}],
                         ['not_in', 't.code', {ip: 'red'}],
                         ['&&', 't1.c', 't2.c'],
-                        ['not', 't1.b']
+                        ['not', 't1.b'],
+                        ['exists', {select: ['t.c']}],
                     ],
                 },
             },
@@ -292,7 +297,7 @@ describe('qb/helper', () => {
                         ['INNER', ['table21', 't21'], ['=', 't21.id', 't1.id']],
                     ],
                     group_by: ['c1.1', 'c1.2', 'c2.1'],
-                    having: ['and', ['null', 'c1.1'], ['null', 'c2.1']]
+                    having: ['and', ['null', 'c1.1'], ['null', 'c2.1']],
                 },
             },
             {
