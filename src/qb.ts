@@ -1,4 +1,3 @@
-import * as r from 'ramda';
 import {SQL, SQLStatement} from 'sql-template-strings';
 
 export interface InlineParam {
@@ -92,7 +91,7 @@ export {Statement as SQLStatement};
 /**
  * Determines the order that clauses will be placed within generated SQL
  */
-const clausePriorities = r.invertObj([
+const clausePriorities = invertObj([
     'select',
     'select_distinct',
     'insert_into',
@@ -115,6 +114,34 @@ const clausePriorities = r.invertObj([
     'returning',
 ]);
 
+function intersperse<T, S>(separator: S, arr: Array<T>): Array<T | S> {
+    const length = arr.length;
+    const res: Array<T | S> = Array(length * 2 - 1);
+    for (let i = 0; i < length; i++) {
+        if (i === length - 1) {
+            res.push(arr[i]);
+        } else {
+            res.push(arr[i], separator);
+        }
+    }
+
+    return res;
+}
+
+function invertObj(obj: object): object {
+    return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k]));
+}
+
+function splitEvery<T>(n: number, arr: Array<T>): Array<T>[] {
+    const length = arr.length;
+    const res: Array<T>[] = [];
+    for (let i = 0; i < length; i += n) {
+        res.push(arr.slice(i, i + n));
+    }
+
+    return res;
+}
+
 /**
  * Escapes identifier by wrapping it into double quotes.
  *
@@ -123,10 +150,10 @@ const clausePriorities = r.invertObj([
  * excape('t'.'id'); //=> '"t"."id"'
  */
 function escape(identifier: string): string {
-    return r.join(
-        '.',
-        r.map((id) => `"${id}"`, r.split('.', identifier))
-    );
+    return identifier
+        .split('.')
+        .map((id) => '"' + id + '"')
+        .join('.');
 }
 
 /**
@@ -152,13 +179,14 @@ function wrapInParens(text) {
  * columnList(['col1', 'col2']); //=> '("col1", "col2")'
  */
 function columnList(columns: string[]): string {
-    return wrapInParens(r.map(escape, columns).join(', '));
+    return wrapInParens(columns.map((v) => escape(v)).join(', '));
 }
 
 function isValue(arg): arg is Value {
-    return r.or(
-        typeof arg === 'string',
-        r.and(typeof arg === 'object', r.has('ip', arg) || r.has('r', arg))
+    return (
+        typeof arg === 'string' ||
+        (typeof arg === 'object' &&
+            (arg.hasOwnProperty('ip') || arg.hasOwnProperty('r')))
     );
 }
 
@@ -172,12 +200,11 @@ function isValue(arg): arg is Value {
  * ); //=> {text: '($1, $2)', values: ['val1', 'val2']}
  */
 function valueList(row: Value[]): SQLStatement {
-    return r
-        .reduce(
-            (sql, part) => sql.append(part),
-            SQL`(`,
-            r.intersperse<SQLStatement | string>(', ', r.map(convertValue, row))
-        )
+    return intersperse(
+        ', ',
+        row.map((v) => convertValue(v))
+    )
+        .reduce((sql, part) => sql.append(part), SQL`(` as any)
         .append(')');
 }
 
@@ -190,12 +217,12 @@ function valueList(row: Value[]): SQLStatement {
  * convertObjectValue({r: 'NOW()'}) //=> {text: 'NOW()', values: []}
  */
 function convertObjectValue(val: ObjectValue): SQLStatement {
-    const inlineParam = r.prop<any, any>('ip', val);
+    const inlineParam = val['ip'];
     if (inlineParam !== undefined) {
         return SQL`${inlineParam}`;
     }
 
-    const rawValue = r.prop<any, any>('r', val);
+    const rawValue = val['r'];
     if (rawValue !== undefined) {
         return SQL``.append(rawValue);
     }
@@ -260,8 +287,14 @@ function tableExpr(table: TableExpr): string | SQLStatement {
  *  ]
  * ); //=> {text: 'SELECT "id" FROM "table", values: []}
  */
-function appendToStatement(st: SQLStatement, list: (string | SQLStatement)[]) {
-    return r.reduce((sql, part) => sql.append(part), st, list);
+function appendToStatement(
+    st: SQLStatement,
+    list: (string | SQLStatement)[]
+): SQLStatement {
+    return list.reduce(
+        (sql: SQLStatement, part) => sql.append(part),
+        st as any
+    );
 }
 
 /**
@@ -278,9 +311,9 @@ function varOperatorHandler(operator: string) {
         wrapInParens(
             appendToStatement(
                 SQL``,
-                r.intersperse<SQLStatement | string>(
+                intersperse(
                     ` ${operator} `,
-                    r.map(handleExpr, exprs)
+                    exprs.map((expr) => handleExpr(expr))
                 )
             )
         );
@@ -369,19 +402,17 @@ const exprHandlers: ExprToHandlerMap = {
     '&&': binaryOperatorHandler('&&'),
     as: binaryOperatorHandler('as'),
     '%': (f, ...args) =>
-        SQL``
-            .append(r.toUpper(f))
-            .append(
-                wrapInParens(
-                    appendToStatement(
-                        SQL``,
-                        r.intersperse<SQLStatement | string>(
-                            ', ',
-                            r.map(handleExpr, args)
-                        )
+        SQL``.append(f.toUpperCase()).append(
+            wrapInParens(
+                appendToStatement(
+                    SQL``,
+                    intersperse(
+                        ', ',
+                        args.map((expr) => handleExpr(expr))
                     )
                 )
-            ),
+            )
+        ),
     and: varOperatorHandler('AND'),
     or: varOperatorHandler('OR'),
     null: (expr: Expr) => handleExpr(expr).append(' IS NULL'),
@@ -392,12 +423,12 @@ const exprHandlers: ExprToHandlerMap = {
     case_when: (...args: Expr[]) =>
         appendToStatement(
             SQL`CASE `,
-            r.intersperse<SQLStatement | string>(
+            intersperse(
                 ' ',
-                r.map(
-                    (statements) => handleCaseExprTuple(statements),
-                    r.splitEvery(2, r.map(handleExpr, args))
-                )
+                splitEvery(
+                    2,
+                    args.map((expr) => handleExpr(expr))
+                ).map((statements) => handleCaseExprTuple(statements))
             )
         ).append(' END'),
     in: inHandler,
@@ -418,7 +449,10 @@ function exprsHandler(statementStart: string) {
     return function (exprs: Expr[]): SQLStatement {
         return appendToStatement(
             SQL``.append(statementStart),
-            r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, exprs))
+            intersperse(
+                ', ',
+                exprs.map((expr) => handleExpr(expr))
+            )
         );
     };
 }
@@ -452,12 +486,18 @@ const clauseHandlers: ClauseToHandlerMap = {
     select_distinct: ({on, exprs}: {on: Expr[]; exprs: Expr[]}) => {
         const onSt = appendToStatement(
             SQL`SELECT DISTINCT ON (`,
-            r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, on))
+            intersperse(
+                ', ',
+                on.map((expr) => handleExpr(expr))
+            )
         ).append(') ');
 
         return appendToStatement(
             onSt,
-            r.intersperse<SQLStatement | string>(', ', r.map(handleExpr, exprs))
+            intersperse(
+                ', ',
+                exprs.map((expr) => handleExpr(expr))
+            )
         );
     },
     insert_into: tableExprHandler('INSERT INTO '),
@@ -466,9 +506,9 @@ const clauseHandlers: ClauseToHandlerMap = {
     values: (list: Value[][]) =>
         appendToStatement(
             SQL`VALUES `,
-            r.intersperse<SQLStatement | string>(
+            intersperse(
                 ', ',
-                r.map((row) => valueList(row), list)
+                list.map((row) => valueList(row))
             )
         ),
     on_conflict: (columns: string[]) => `ON CONFLICT ${columnList(columns)}`,
@@ -479,21 +519,19 @@ const clauseHandlers: ClauseToHandlerMap = {
     join: (joins: Join[]) =>
         appendToStatement(
             SQL``,
-            r.intersperse<SQLStatement | string>(
+            intersperse(
                 ' ',
-                r.map(
-                    (join) =>
-                        appendToStatement(
-                            SQL``,
-                            r.intersperse(' ', [
-                                join[0],
-                                'JOIN',
-                                tableExpr(join[1]),
-                                'ON',
-                                handleExpr(join[2]),
-                            ])
-                        ),
-                    joins
+                joins.map((join) =>
+                    appendToStatement(
+                        SQL``,
+                        intersperse(' ', [
+                            join[0],
+                            'JOIN',
+                            tableExpr(join[1]),
+                            'ON',
+                            handleExpr(join[2]),
+                        ])
+                    )
                 )
             )
         ),
@@ -501,22 +539,23 @@ const clauseHandlers: ClauseToHandlerMap = {
     group_by: (exprs: Expr[]) =>
         appendToStatement(
             SQL`GROUP BY `,
-            r.intersperse<string | SQLStatement>(', ', r.map(handleExpr, exprs))
+            intersperse(
+                ', ',
+                exprs.map((expr) => handleExpr(expr))
+            )
         ),
     having: (expr: Expr) => SQL`HAVING `.append(handleExpr(expr)),
     order_by: (orderBy: OrderBy) =>
         appendToStatement(
             SQL`ORDER BY `,
-            r.intersperse<string | SQLStatement>(
+            intersperse(
                 ', ',
-                r.map(
-                    (order) =>
-                        handleExpr(order[0])
-                            .append(' ')
-                            .append(order[1])
-                            .append(' ')
-                            .append(order[2]),
-                    orderBy
+                orderBy.map((order) =>
+                    handleExpr(order[0])
+                        .append(' ')
+                        .append(order[1])
+                        .append(' ')
+                        .append(order[2])
                 )
             )
         ),
@@ -541,19 +580,16 @@ function handleExpr(expr: Expr): SQLStatement {
         return wrapInParens(_toSql(expr));
     }
 
-    const handler = r.prop<keyof ExprToHandlerMap, ExprToHandlerMap>(
-        r.head(expr),
-        exprHandlers
-    );
+    const handler = exprHandlers[expr[0]];
     if (!handler) {
         throw new Error(
-            `Unknown expr ${r.head(expr)}. Supported exprs: ${Object.keys(
+            `Unknown expr ${expr[0]}. Supported exprs: ${Object.keys(
                 exprHandlers
             ).join(', ')}`
         );
     }
 
-    return handler(...r.tail(expr));
+    return handler(...expr.slice(1));
 }
 
 /**
@@ -569,10 +605,7 @@ function handleExpr(expr: Expr): SQLStatement {
  * ); //=> {text: 'SELECT "id"', values: []}
  */
 function clauseToSql(m: Sql, clauseKey: string): SQLStatement | string {
-    const handler = r.prop<keyof ClauseToHandlerMap, ClauseToHandlerMap>(
-        clauseKey,
-        clauseHandlers
-    );
+    const handler = clauseHandlers[clauseKey];
     if (!handler) {
         throw new Error(
             `Unknown clause ${clauseKey}. Supported clauses: ${Object.keys(
@@ -594,16 +627,17 @@ function clauseToSql(m: Sql, clauseKey: string): SQLStatement | string {
  * }); //=> {text: 'SELECT "id" FROM "table"'}
  */
 function _toSql(m: Sql): SQLStatement {
-    const sortedClauses = r.sortBy(
-        (clause) => Number(clausePriorities[clause]),
-        Object.keys(m)
-    );
+    const sortedClauses = Object.keys(m).sort((a, b) => {
+        return Number(clausePriorities[a]) - Number(clausePriorities[b]);
+    });
 
-    return r.reduce(
-        (sql, clauseKey) => sql.append(' ').append(clauseToSql(m, clauseKey)),
-        SQL``.append(clauseToSql(m, r.head(sortedClauses) as string)),
-        r.tail(sortedClauses)
-    );
+    return sortedClauses
+        .slice(1)
+        .reduce(
+            (sql, clauseKey) =>
+                sql.append(' ').append(clauseToSql(m, clauseKey)),
+            SQL``.append(clauseToSql(m, sortedClauses[0] as string))
+        );
 }
 
 /**
