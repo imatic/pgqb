@@ -1,6 +1,6 @@
 {
     "name": "@imatic/pgqb",
-    "version": "0.1.26",
+    "version": "0.1.27",
     "description": "Functional PostgreSQL query builder",
     "main": "./dist/index.js",
     "typings": "./dist/index.d.ts",
@@ -13,8 +13,6 @@
         "postgresql"
     ],
     "dependencies": {
-        "@types/ramda": "^0.27.6",
-        "ramda": "^0.27.0",
         "sql-template-strings": "^2.2.2",
         "typescript": "^3.5.2"
     },

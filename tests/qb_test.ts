@@ -1,6 +1,14 @@
 import {expect} from 'chai';
 import * as qb from '../src/qb';
-import * as r from 'ramda';
+
+function pick(props: string[], obj: object) {
+    const res = {};
+    for (const k of props) {
+        res[k] = obj[k];
+    }
+
+    return res;
+}
 
 describe('common/qb', () => {
     describe('toSql', () => {
@@ -224,7 +232,7 @@ describe('common/qb', () => {
 
         tests.forEach((test) => {
             it(test.name, () =>
-                expect(r.pick(['text', 'values'], qb.toSql(test.map))).eqls(
+                expect(pick(['text', 'values'], qb.toSql(test.map))).eqls(
                     test.sql
                 )
             );

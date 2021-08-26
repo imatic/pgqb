@@ -1,5 +1,4 @@
 import * as qb from './qb';
-import * as r from 'ramda';
 
 /**
  * Merges more sql maps into 1. If same property exists in more maps, value from last map
@@ -13,34 +12,40 @@ import * as r from 'ramda';
  * ); //=> {select: ['val2'], from: 'table'}
  */
 export function merge(...m: qb.Sql[]): qb.Sql {
-    return r.reduce<qb.Sql, qb.Sql>(r.mergeRight, {}, m);
+    return m.reduce((acc, next) => Object.assign(acc, next), {});
 }
 
 /**
  * Handlers for appending value of first clause to value of second clause.
  */
 const appendHandlers = {
-    columns: (c1: string[], c2: string[]): string[] => r.concat(c1, c2),
+    columns: (c1: string[], c2: string[]): string[] => c1.concat(c2),
     values: (v1: qb.Value[][], v2: qb.Value[][]): qb.Value[][] =>
-        r.map(
-            (k) => r.concat(v1[k] as qb.Value[], v2[k] as qb.Value[]),
-            Object.keys(v1)
-        ),
+        Object.keys(v1).map((k) => v1[k].concat(v2[k])),
     where: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
     having: (e1: qb.Expr, e2: qb.Expr) => ['and', e1, e2],
-    set: (e1: qb.Expr[], e2: qb.Expr[]) => r.concat(e1, e2),
-    order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => r.concat(o1, o2),
-    select: (s1: qb.Expr[], s2: qb.Expr[]) => r.concat(s1, s2),
-    join: (j1: qb.Join[], j2: qb.Join[]) => r.concat(j1, j2),
-    group_by: (g1: qb.Expr[], g2: qb.Expr[]) => r.concat(g1, g2),
+    set: (e1: qb.Expr[], e2: qb.Expr[]) => e1.concat(e2),
+    order_by: (o1: qb.OrderBy, o2: qb.OrderBy) => o1.concat(o2),
+    select: (s1: qb.Expr[], s2: qb.Expr[]) => s1.concat(s2),
+    join: (j1: qb.Join[], j2: qb.Join[]) => j1.concat(j2),
+    group_by: (g1: qb.Expr[], g2: qb.Expr[]) => g1.concat(g2),
 };
+
+function omit(keys: string[], obj: object): object {
+    const res = Object.assign({}, obj);
+    for (const k of keys) {
+        delete res[k];
+    }
+
+    return res;
+}
 
 /**
  * Checks if append handlers exists for clauses in given map, throws exception if not.
  */
 function checkAppendSupportedClauses(m: qb.Sql) {
     const unsupportedClauses = Object.keys(
-        r.omit(Object.keys(appendHandlers), m)
+        omit(Object.keys(appendHandlers), m)
     );
 
     if (unsupportedClauses.length) {
@@ -67,10 +72,12 @@ function checkAppendSupportedClauses(m: qb.Sql) {
 function _append(m1: qb.Sql, m2: qb.Sql): qb.Sql {
     checkAppendSupportedClauses(m2);
 
-    return r.reduce(
-        (m, k) => r.assoc(k, m[k] ? appendHandlers[k](m1[k], m2[k]) : m2[k], m),
-        m1,
-        Object.keys(m2)
+    return Object.keys(m2).reduce(
+        (m, k) =>
+            Object.assign({}, m, {
+                [k]: m[k] ? appendHandlers[k](m1[k], m2[k]) : m2[k],
+            }),
+        m1
     );
 }
 
@@ -85,7 +92,7 @@ function _append(m1: qb.Sql, m2: qb.Sql): qb.Sql {
  * ); //=> {columns: ['col1', 'col2', 'col3']}
  */
 export function append(...m: qb.Sql[]): qb.Sql {
-    return r.reduce(_append, r.head(m) as qb.Sql, r.tail(m) as qb.Sql[]);
+    return m.slice(1).reduce((acc, next) => _append(acc, next), m[0]);
 }
 
 export function select(exprs: qb.Expr[]): qb.Sql {
@@ -97,11 +104,11 @@ export function selectDistinct(on: qb.Expr[], exprs: qb.Expr[]): qb.Sql {
 }
 
 export function insertInto(table: string | qb.Sql, alias?: string): qb.Sql {
-    return {insert_into: r.isNil(alias) ? table : [table, alias]};
+    return {insert_into: alias == null ? table : [table, alias]};
 }
 
 export function update(table: string | qb.Sql, alias?: string): qb.Sql {
-    return {update: r.isNil(alias) ? table : [table, alias]};
+    return {update: alias == null ? table : [table, alias]};
 }
 
 export function columns(columns: string[]): qb.Sql {
@@ -121,7 +128,7 @@ export function set(exprs: qb.Expr[]): qb.Sql {
 }
 
 export function from(table: string | qb.Sql, alias?: string): qb.Sql {
-    return {from: r.isNil(alias) ? table : [table, alias]};
+    return {from: alias == null ? table : [table, alias]};
 }
 
 export function joins(...joins: qb.Join[]): qb.Sql {

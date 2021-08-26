@@ -11,7 +11,7 @@
         "no-var-keyword": true,
         "prefer-conditional-expression": true,
         "radix": true,
-        "triple-equals": true,
+        "triple-equals": [true, "allow-null-check"],
         "typeof-compare": true,
         "use-isnan": true,
         "deprecation": true,
