@@ -97,7 +97,7 @@ describe('qb/helper', () => {
                     h.from('table', 't'),
                     h.joins(
                         h.join('table2', 't2', h.expr.eq('t2.id', 't.id')),
-                        h.join('table3', 't3', h.expr.eq('t3.id', 't.id')),
+                        h.join('table3', 't3', h.expr.eq('"t3"."id"', 't.id')),
                         h.leftJoin(
                             'leftTable',
                             't4',
@@ -124,7 +124,7 @@ describe('qb/helper', () => {
                     from: ['table', 't'],
                     join: [
                         ['INNER', ['table2', 't2'], ['=', 't2.id', 't.id']],
-                        ['INNER', ['table3', 't3'], ['=', 't3.id', 't.id']],
+                        ['INNER', ['table3', 't3'], ['=', '"t3"."id"', 't.id']],
                         ['LEFT', ['leftTable', 't4'], ['=', 't4.id', 't.id']],
                     ],
                     where: [

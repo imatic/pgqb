@@ -96,7 +96,7 @@ describe('common/qb', () => {
                     from: ['table', 't'],
                     join: [
                         ['INNER', ['table2', 't2'], ['=', 't2.id', 't.id']],
-                        ['INNER', ['table3', 't3'], ['=', 't3.id', 't.id']],
+                        ['INNER', ['table3', 't3'], ['=', '"t3"."id"', 't.id']],
                     ],
                     where: [
                         'and',

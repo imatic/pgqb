@@ -147,9 +147,14 @@ function splitEvery<T>(n: number, arr: Array<T>): Array<T>[] {
  *
  * @example
  * escape('table'); //=> '"table"'
- * excape('t'.'id'); //=> '"t"."id"'
+ * escape('t.id'); //=> '"t"."id"'
+ * escape('"t"."id"'); //=> '"t"."id"'
  */
 function escape(identifier: string): string {
+    if (identifier[0] === '"') {
+        return identifier;
+    }
+
     return identifier
         .split('.')
         .map((id) => '"' + id + '"')
