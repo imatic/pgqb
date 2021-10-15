@@ -5,6 +5,19 @@ describe('qb/helper', () => {
     describe('merge', () => {
         const tests = [
             {
+                name: 'insert default values',
+                actual: h.merge(
+                    h.insertInto('table_name'),
+                    h.columns([]),
+                    h.values([])
+                ),
+                expected: {
+                    insert_into: 'table_name',
+                    columns: [],
+                    values: []
+                },
+            },
+            {
                 name: 'insert_into',
                 actual: h.merge(
                     h.insertInto('table_name'),

@@ -14,6 +14,18 @@ describe('common/qb', () => {
     describe('toSql', () => {
         const tests: {name: string; map: qb.Sql; sql: qb.SQLStatement}[] = [
             {
+                name: 'insert default values',
+                map: {
+                    insert_into: 'table_name',
+                    columns: [],
+                    values: []
+                },
+                sql: {
+                    text: 'INSERT INTO "table_name"  DEFAULT VALUES',
+                    values: []
+                }
+            },
+            {
                 name: 'insert_into',
                 map: {
                     insert_into: 'table_name',

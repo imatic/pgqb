@@ -188,6 +188,10 @@ function wrapInParens(text) {
  * columnList(['col1', 'col2']); //=> '("col1", "col2")'
  */
 function columnList(columns: string[]): string {
+    if (columns.length === 0) {
+        return '';
+    }
+
     return wrapInParens(columns.map((v) => escape(v)).join(', '));
 }
 
@@ -513,7 +517,7 @@ const clauseHandlers: ClauseToHandlerMap = {
     update: tableExprHandler('UPDATE '),
     columns: (columns: string[]) => columnList(columns),
     values: (list: Value[][]) =>
-        appendToStatement(
+        list.length === 0 ? 'DEFAULT VALUES' : appendToStatement(
             SQL`VALUES `,
             intersperse(
                 ', ',
