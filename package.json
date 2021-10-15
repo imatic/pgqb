@@ -1,6 +1,6 @@
 {
     "name": "@imatic/pgqb",
-    "version": "0.1.28",
+    "version": "0.1.29",
     "description": "Functional PostgreSQL query builder",
     "main": "./dist/index.js",
     "typings": "./dist/index.d.ts",
@@ -19,6 +19,7 @@
     "devDependencies": {
         "@types/chai": "^4.0.0",
         "@types/mocha": "^7.0.2",
+        "@types/node": "^16.7.13",
         "chai": "^4.1.0",
         "mocha": "^8.0.1",
         "prettier": "^2.0.5",

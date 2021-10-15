@@ -116,6 +116,10 @@ const clausePriorities = invertObj([
 
 function intersperse<T, S>(separator: S, arr: Array<T>): Array<T | S> {
     const length = arr.length;
+    if (length === 0) {
+        return Array(0);
+    }
+
     const res: Array<T | S> = Array(length * 2 - 1);
     for (let i = 0; i < length; i++) {
         if (i === length - 1) {
